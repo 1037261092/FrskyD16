@@ -27,9 +27,11 @@
 #include "main.h"
 #include "spi.h"
 #include "cc2500.h"
+#include "delay.h"
 int main(void)
 {
-	spi_init();	
+	spi_init();
+	delay_init(48);	
 	while (1)
 	{
 		SPI1_NSS_LOW;
