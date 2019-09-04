@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F030,USE_STDPERIPH_DRIVER,USE_FULL_ASSERT</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\DRIVER;..\LIB\inc;..\USER</IncludePath>
+              <IncludePath>..\CORE;..\DRIVER;..\LIB\inc;..\USER;..\HARDWARE;..\FUNCTION</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -525,6 +525,16 @@
               <FileName>system_stm32f0xx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\system_stm32f0xx.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>FUNCTION</GroupName>
+          <Files>
+            <File>
+              <FileName>delay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\FUNCTION\delay.c</FilePath>
             </File>
           </Files>
         </Group>

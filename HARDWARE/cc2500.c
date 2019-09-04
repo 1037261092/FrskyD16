@@ -39,3 +39,20 @@ void CC2500_WriteData(uint8_t *dpbuffer, uint8_t len)
 
 }
 
+//void delay_us(uint16_t us)
+//{
+//	for( ; us ; us--)
+//	{
+//		asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");
+//		asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");
+//	}
+//}
+
+//void delay_ms(uint16_t ms)
+//{
+//	for( ; ms ; ms--)
+//	{
+//		delay_us(1000) ;
+//	}
+//}
+

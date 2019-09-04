@@ -75,16 +75,16 @@ enum
 
 enum CC2500_POWER
 {
-	CC2500_POWER_0  = 0x00,	// –55dbm or less
+	CC2500_POWER_0  = 0x00,	// -55dbm or less
 	CC2500_POWER_1  = 0x50,	// -30dbm
-	CC2500_POWER_2  = 0x44, // -8dbm
-	CC2500_POWER_3  = 0xC0, // -6dbm
-	CC2500_POWER_4  = 0x84, // -4dbm
-	CC2500_POWER_5  = 0x81, // -2dbm
-	CC2500_POWER_6  = 0x46, // -0dbm
-	CC2500_POWER_7  = 0x93, // -8dbm
-	CC2500_POWER_8  = 0x55, // -6dbm
-	CC2500_POWER_9  = 0x8D, // -4dbm
+	CC2500_POWER_2  = 0x44, // -28dbm
+	CC2500_POWER_3  = 0xC0, // -26dbm
+	CC2500_POWER_4  = 0x84, // -24dbm
+	CC2500_POWER_5  = 0x81, // -22dbm
+	CC2500_POWER_6  = 0x46, // -20dbm
+	CC2500_POWER_7  = 0x93, // -18dbm
+	CC2500_POWER_8  = 0x55, // -16dbm
+	CC2500_POWER_9  = 0x8D, // -14dbm
 	CC2500_POWER_10 = 0xC6,	// -12dbm
 	CC2500_POWER_11 = 0x97,	// -10dbm
 	CC2500_POWER_12 = 0x6E,	//  -8dbm
@@ -148,8 +148,8 @@ enum CC2500_POWER
 #define CC2500_STATE_TX_UNDERFLOW              0x70
 
 
-void DelayUs(uint16_t Us);
-void DelayMs(uint16_t Ms);
+//void delay_us(uint16_t us);
+//void delay_ms(uint16_t ms);
 uint8_t CC2500_Init(void);
 void CC2500_SetPower(uint8_t power);
 void CC2500_Strobe(uint8_t state);
@@ -157,6 +157,5 @@ void CC2500_WriteReg(uint8_t address, uint8_t data);
 uint8_t CC2500_ReadReg(uint8_t address);
 void CC2500_SetTxRxMode(uint8_t mode);
 void CC2500_WriteData(uint8_t *dpbuffer, uint8_t len);
-
 #endif
 

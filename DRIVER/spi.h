@@ -17,4 +17,5 @@ void SPI1_WriteByte(uint8_t TxData);
 void SPI1_WriteBytes(uint8_t *TxData,uint8_t length);
 uint8_t SPI1_ReadByte(void);
 uint8_t SPI1_Transfer(uint8_t data);
+
 #endif
