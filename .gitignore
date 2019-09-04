@@ -1,3 +1,6 @@
 ##ignore this file##
 /PRO/DebugConfig/
 /OBJ/
+/PRO/*.uvoptx
+/PRO/*.uvprojx
+/PRO/*.zhaobing
