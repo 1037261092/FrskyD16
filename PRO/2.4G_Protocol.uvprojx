@@ -400,6 +400,13 @@
         </Group>
         <Group>
           <GroupName>HARDWARE</GroupName>
+          <Files>
+            <File>
+              <FileName>cc2500.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\cc2500.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>LIB</GroupName>
