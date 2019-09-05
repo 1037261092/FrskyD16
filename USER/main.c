@@ -28,17 +28,24 @@
 #include "spi.h"
 #include "cc2500.h"
 #include "delay.h"
+
 int main(void)
 {
-	spi_init();
 	delay_init(48);	
+	CC2500_Init();
 	while (1)
 	{
+//		SPI1_NSS_LOW;
+//		SPI1_Transfer(0x55);
+//		SPI1_NSS_HIGH;
+//		CC2500_Strobe(CC2500_SRES);
+//	    delay_ms(15);
+//		
 		SPI1_NSS_LOW;
-		//SPI1_Transfer(0x55);
-		delay_ms(1);
+		SPI1_Transfer(CC2500_30_PARTNUM);
+		delay_us(1);
 		SPI1_NSS_HIGH;
-		delay_ms(1);
+		
 	}
 }
 

@@ -2,6 +2,11 @@
 #define __CC2500_H_
 
 #include "stm32f0xx.h"
+#include <stdbool.h>
+
+#define CC2500_NSS_LOW   SPI1_NSS_LOW
+#define CC2500_NSS_HIGH  SPI1_NSS_HIGH
+
 
 enum 
 {
@@ -148,9 +153,7 @@ enum CC2500_POWER
 #define CC2500_STATE_TX_UNDERFLOW              0x70
 
 
-//void delay_us(uint16_t us);
-//void delay_ms(uint16_t ms);
-uint8_t CC2500_Init(void);
+bool CC2500_Init(void);
 void CC2500_SetPower(uint8_t power);
 void CC2500_Strobe(uint8_t state);
 void CC2500_WriteReg(uint8_t address, uint8_t data);

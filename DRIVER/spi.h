@@ -2,6 +2,7 @@
 #define __SPI_H_
 
 #include "stm32f0xx.h"
+#include "delay.h"
 
 #define SPI1_PORTS         GPIOA
 #define SPI1_PINS_MOSI     GPIO_Pin_7
