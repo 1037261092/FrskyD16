@@ -3,7 +3,7 @@
 #include "delay.h"
 
 #define FRSKYD16_CONFIG_CNTS  36
-
+char x;
 static const uint8_t cc2500_conf[FRSKYD16_CONFIG_CNTS][2]=
 {
 	{ CC2500_02_IOCFG0   , 0x06 },	
@@ -48,7 +48,7 @@ static const uint8_t cc2500_conf[FRSKYD16_CONFIG_CNTS][2]=
 static void CC2500_WaitingReady()
 {
 	uint16_t cnts = 0;
-	while(((SPI1_PORTS->IDR & SPI1_PINS_MISO) != (uint32_t)Bit_RESET) && ++cnts < 10000);
+	while(((SPI_MISO_PORT->IDR & SPI_PIN_MISO) != (uint32_t)Bit_RESET) && ++cnts < 10000);
 }
 
 
@@ -65,8 +65,10 @@ void CC2500_SetPower(uint8_t power)
 void CC2500_Strobe(uint8_t state)
 {
 	CC2500_NSS_LOW;
-	CC2500_WaitingReady();   delay_us(1);
-	SPI1_Transfer(state);   delay_us(1);
+	CC2500_WaitingReady();  
+	delay_us(5);
+	SPI_Transfer(state);   
+	delay_us(5);
 	CC2500_NSS_HIGH;
 }
 
@@ -74,8 +76,8 @@ void CC2500_WriteReg(uint8_t address, uint8_t data)
 {
 	CC2500_NSS_LOW;          delay_us(1);
 	CC2500_WaitingReady();
-	SPI1_Transfer(address); delay_us(1);
-	SPI1_Transfer(data);    delay_us(1);
+	SPI_Transfer(address); delay_us(1);
+	SPI_Transfer(data);    delay_us(1);
 	CC2500_NSS_HIGH;
 }
 
@@ -83,10 +85,10 @@ void CC2500_WriteReglistrMulti(uint8_t address, const uint8_t data[], uint8_t le
 {
 	CC2500_NSS_LOW;          delay_us(1);
 	CC2500_WaitingReady();
-	SPI1_WriteByte(CC2500_WRITE_BURST | address);
+	SPI_WriteByte(CC2500_WRITE_BURST | address);
 	for(uint8_t i=0; i < length ; i++)
 	{
-		SPI1_WriteByte(data[i]);
+		SPI_WriteByte(data[i]);
 	}
 	delay_us(1);
 	CC2500_NSS_HIGH;
@@ -97,7 +99,7 @@ uint8_t CC2500_ReadReg(uint8_t address)
 	uint8_t result;
 	CC2500_NSS_LOW;           delay_us(2);
 	CC2500_WaitingReady();
-	result = SPI1_Transfer(CC2500_READ_SINGLE | address);
+	result = SPI_Transfer(CC2500_READ_SINGLE | address);
 	CC2500_NSS_HIGH;
 	return result;
 }
@@ -118,13 +120,23 @@ bool CC2500_Init(void)
 {
 	bool CC2500RestError_flag = false;
 	spi_init();
+	CC2500_NSS_HIGH;
+	delay_ms(1);
+	CC2500_NSS_LOW;
+	delay_ms(1);
+	CC2500_NSS_HIGH;
+	delay_ms(1);
+	CC2500_NSS_LOW;
+	delay_ms(1);
 	CC2500_Strobe(CC2500_SRES);
-	delay_ms(15);
+	delay_ms(1);
+	CC2500_NSS_HIGH;
+	delay_ms(1);
+	x = CC2500_ReadReg(CC2500_0E_FREQ1);
 	if(CC2500_ReadReg(CC2500_0E_FREQ1) != 0xC4)
 	{
 		CC2500RestError_flag = true;	
 	}
-	delay_ms(11);
 	if(!CC2500RestError_flag)
 	{
 		for(uint8_t i=0 ;i < FRSKYD16_CONFIG_CNTS ; i++)

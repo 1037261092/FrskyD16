@@ -41,10 +41,10 @@ int main(void)
 //		CC2500_Strobe(CC2500_SRES);
 //	    delay_ms(15);
 //		
-		SPI1_NSS_LOW;
-		SPI1_Transfer(CC2500_30_PARTNUM);
-		delay_us(1);
-		SPI1_NSS_HIGH;
+		SPI_NSS_LOW;
+		CC2500_ReadReg(CC2500_0E_FREQ1);
+		SPI_NSS_HIGH;
+		delay_us(50);
 		
 	}
 }

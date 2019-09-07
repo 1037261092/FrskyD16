@@ -4,8 +4,8 @@
 #include "stm32f0xx.h"
 #include <stdbool.h>
 
-#define CC2500_NSS_LOW   SPI1_NSS_LOW
-#define CC2500_NSS_HIGH  SPI1_NSS_HIGH
+#define CC2500_NSS_LOW   SPI_NSS_LOW
+#define CC2500_NSS_HIGH  SPI_NSS_HIGH
 
 
 enum 
