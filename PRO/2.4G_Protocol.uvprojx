@@ -396,6 +396,11 @@
               <FileType>1</FileType>
               <FilePath>..\DRIVER\spi.c</FilePath>
             </File>
+            <File>
+              <FileName>frsky_d16.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DRIVER\frsky_d16.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -535,6 +540,16 @@
               <FileName>delay.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\FUNCTION\delay.c</FilePath>
+            </File>
+            <File>
+              <FileName>flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\FUNCTION\flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>function.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\FUNCTION\function.c</FilePath>
             </File>
           </Files>
         </Group>

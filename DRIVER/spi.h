@@ -4,7 +4,7 @@
 #include "stm32f0xx.h"
 #include "delay.h"
 
-#define HARDWARE_SPI
+//#define HARDWARE_SPI
 
 #define SPI_MOSI_PORT         GPIOA
 #define SPI_MISO_PORT         GPIOA

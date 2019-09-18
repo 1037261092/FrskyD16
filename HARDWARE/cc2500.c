@@ -67,7 +67,7 @@ void CC2500_Strobe(uint8_t state)
 	CC2500_NSS_LOW;
 	CC2500_WaitingReady();  
 	delay_us(5);
-	SPI_Transfer(state);   
+	SPI_WriteByte(state);   
 	delay_us(5);
 	CC2500_NSS_HIGH;
 }
@@ -76,21 +76,22 @@ void CC2500_WriteReg(uint8_t address, uint8_t data)
 {
 	CC2500_NSS_LOW;          delay_us(1);
 	CC2500_WaitingReady();
-	SPI_Transfer(address); delay_us(1);
-	SPI_Transfer(data);    delay_us(1);
+	SPI_WriteByte(address); delay_us(1);
+	SPI_WriteByte(data);    delay_us(1);
 	CC2500_NSS_HIGH;
 }
 
 void CC2500_WriteReglistrMulti(uint8_t address, const uint8_t data[], uint8_t length)
 {
-	CC2500_NSS_LOW;          delay_us(1);
+	CC2500_NSS_LOW;          delay_us(4);
 	CC2500_WaitingReady();
 	SPI_WriteByte(CC2500_WRITE_BURST | address);
 	for(uint8_t i=0; i < length ; i++)
 	{
 		SPI_WriteByte(data[i]);
+		delay_us(3);
 	}
-	delay_us(1);
+	delay_us(4);
 	CC2500_NSS_HIGH;
 }
 
@@ -132,14 +133,15 @@ bool CC2500_Init(void)
 	delay_ms(1);
 	CC2500_NSS_HIGH;
 	delay_ms(1);
-	x = CC2500_ReadReg(CC2500_0E_FREQ1);
 	if(CC2500_ReadReg(CC2500_0E_FREQ1) != 0xC4)
 	{
 		CC2500RestError_flag = true;	
 	}
+	delay_ms(1);
+	delay_ms(10);
 	if(!CC2500RestError_flag)
 	{
-		for(uint8_t i=0 ;i < FRSKYD16_CONFIG_CNTS ; i++)
+		for(uint8_t i=0 ;i < FRSKYD16_CONFIG_CNTS ; ++i)
 		{
 			CC2500_WriteReg(cc2500_conf[i][0],cc2500_conf[i][1]);
 			delay_us(20);
@@ -148,7 +150,7 @@ bool CC2500_Init(void)
 		delay_us(20);
 		CC2500_SetPower(CC2500_POWER_15);
 		CC2500_Strobe(CC2500_SIDLE);
-		delay_us(20);
+		delay_ms(10);
 	}
 	return CC2500RestError_flag;
 }

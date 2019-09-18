@@ -117,6 +117,7 @@ void SPI_WriteByte(uint8_t data)
 		delay_us(1);
 		SPI_SCK_LOW;
 		delay_us(1);
+		
 	}
 }
 

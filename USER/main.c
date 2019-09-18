@@ -28,24 +28,17 @@
 #include "spi.h"
 #include "cc2500.h"
 #include "delay.h"
+#include "frsky_d16.h"
 
 int main(void)
 {
 	delay_init(48);	
-	CC2500_Init();
+	initFRSKYD16();
+	SetBind();
 	while (1)
 	{
-//		SPI1_NSS_LOW;
-//		SPI1_Transfer(0x55);
-//		SPI1_NSS_HIGH;
-//		CC2500_Strobe(CC2500_SRES);
-//	    delay_ms(15);
-//		
-		SPI_NSS_LOW;
-		CC2500_ReadReg(CC2500_0E_FREQ1);
-		SPI_NSS_HIGH;
-		delay_us(50);
-		
+		ReadFRSKYD16(); 
+		delay_ms(2);
 	}
 }
 
