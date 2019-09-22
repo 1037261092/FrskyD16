@@ -16,3 +16,5 @@ uint16_t GetUniqueID(void)
 	ID = (ID << 8) + chipID.IDbyte[1] + chipID.IDbyte[3] + chipID.IDbyte[5] + chipID.IDbyte[7] + chipID.IDbyte[9] + chipID.IDbyte[11];
 	return ID;
 }
+
+

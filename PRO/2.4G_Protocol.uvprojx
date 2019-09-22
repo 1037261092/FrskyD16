@@ -551,6 +551,11 @@
               <FileType>1</FileType>
               <FilePath>..\FUNCTION\function.c</FilePath>
             </File>
+            <File>
+              <FileName>sbus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DRIVER\sbus.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

@@ -29,16 +29,17 @@
 #include "cc2500.h"
 #include "delay.h"
 #include "frsky_d16.h"
-
+#include "sbus.h"
 int main(void)
 {
 	delay_init(48);	
 	initFRSKYD16();
 	SetBind();
+	sbus_init();
 	while (1)
 	{
 		ReadFRSKYD16(); 
-		delay_ms(2);
+		sbus_checkrx();
 	}
 }
 
