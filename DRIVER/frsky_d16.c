@@ -3,7 +3,7 @@
 #include "delay.h"
 #include "function.h"
 #include <stdlib.h>
-
+#include "sbus.h"
 #define FRSKYD16_PACKET_LEN  30
 #define FRSKYD16_BINDCHANNEL 47 						//跳频列表第47个频段固定为对码频段 0 
 
@@ -184,13 +184,13 @@ static void __attribute__((unused)) Frsky_D16_build_Bind_packet(void)
 //==============================================================================
 //数据包格式
 //==============================================================================
-static void  __attribute__((unused)) FRSKYD16_build_Data_packet(void)
+void  __attribute__((unused)) FRSKYD16_build_Data_packet()
 {
 	static uint8_t lpass;
 	uint16_t chan_0 ;
 	uint16_t chan_1 ; 
 	uint8_t startChan = 0;
-	
+	sbus_checkrx();
 	// 固定码 + 遥控器 ID
 	SendPacket[0] 	= 0x1D; 
 	SendPacket[1]   = (TransmitterID >> 8) & 0xFF  ;
@@ -305,7 +305,7 @@ void Calc_FRSKYD16_Channel()
 uint16_t ReadFRSKYD16(void)
 {
   	static uint8_t Cnts = 0 ; 
-	//FRSKYD16Phase = FRSKYD16_BIND ;
+	//FRSKYD16Phase = FRSKYD16_BIND 
 	switch(FRSKYD16Phase)
 	{
 		//发送对码数据包
@@ -318,7 +318,7 @@ uint16_t ReadFRSKYD16(void)
 				CC2500_Strobe(CC2500_SIDLE);
 				CC2500_WriteData(SendPacket, FRSKYD16_PACKET_LEN);
 				++FRSKYD16_BindCounts ; 
-				FRSKYD16Phase = FRSKYD16_BIND_PASSBACK ; 
+				//FRSKYD16Phase = FRSKYD16_BIND_PASSBACK ; 
 				Cnts = 0 ; 
 			}  
 			else
@@ -361,7 +361,7 @@ uint16_t ReadFRSKYD16(void)
 		  	return 2634 ;
 		  
 		//发送数据包
-		case FRSKYD16_DATA : 
+		case FRSKYD16_DATA :			
 		  	FRSKYD16_calc_next_chan();
 			FRSKYD16_tune_chan_fast();
 			FRSKYD16_build_Data_packet();

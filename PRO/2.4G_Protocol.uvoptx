@@ -153,27 +153,27 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>CC2500_ReadReg(CC2500_0E_FREQ1)</ItemText>
+          <ItemText>x</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>x</ItemText>
+          <ItemText>TransmitterID</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>TransmitterID</ItemText>
+          <ItemText>FRSKYD16_ChannelShip</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>FRSKYD16_ChannelShip</ItemText>
+          <ItemText>FRSKYD16_calData</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>FRSKYD16_calData</ItemText>
+          <ItemText>FRSKYD16_HOPChannel</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
@@ -183,47 +183,47 @@
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>id_tmp</ItemText>
+          <ItemText>rx_buffer</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>FRSKYD16_HOPChannel</ItemText>
+          <ItemText>data</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rx_buffer</ItemText>
+          <ItemText>framestarted</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>1</WinNumber>
-          <ItemText>channels</ItemText>
+          <ItemText>rx_time</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>data</ItemText>
+          <ItemText>framestarted</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>framestarted</ItemText>
+          <ItemText>frame_received</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rx_time</ItemText>
+          <ItemText>FRSKYD16_SendDataBuff</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>1</WinNumber>
-          <ItemText>size</ItemText>
+          <ItemText>ReadFRSKYD16</ItemText>
         </Ww>
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>framestarted</ItemText>
+          <ItemText>SendPacket</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

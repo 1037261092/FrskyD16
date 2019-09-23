@@ -63,6 +63,6 @@ extern const uint8_t FRSKYD16_CH_Code[16];
 void initFRSKYD16(void);
 uint16_t ReadFRSKYD16(void);
 void SetBind(void) ; 
-
+void FRSKYD16_build_Data_packet(void);
 
 #endif

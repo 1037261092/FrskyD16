@@ -39,7 +39,7 @@ int main(void)
 	while (1)
 	{
 		ReadFRSKYD16(); 
-		sbus_checkrx();
+		delay_ms(20);
 	}
 }
 

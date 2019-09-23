@@ -21,7 +21,6 @@ int frame_received = 0;
 int rx_state = 0;
 int bind_safety = 0;
 uint8_t data[25];
-int channels[9];
 
 // statistics
 int stat_framestartcount;
@@ -36,7 +35,8 @@ uint8_t data[25];
 int failsafe = 0;
 int rxmode = 0;
 int rx_ready = 0;
-
+int channels[16];
+extern uint16_t FRSKYD16_SendDataBuff[];
 void sbus_init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -163,7 +163,7 @@ void sbus_checkrx(void)
 				data[ i - framestart] = rx_buffer[i%(RX_BUFF_SIZE)];
 				int symboltime = rx_time[i%(RX_BUFF_SIZE)];         //rx_time 里存储了  每次接收数据的时间间隔
 				//stat_timing[ i - framestart] = symboltime;
-				if ( symboltime > 1024 &&  i - framestart > 0 ) 
+				if ( symboltime > 0x1690 &&  i - framestart > 0 ) 
 				{
 					timing_fail = 1;
 				}
@@ -194,6 +194,23 @@ void sbus_checkrx(void)
 		  
 		if ( frame_received )
 		{ 		
+			FRSKYD16_SendDataBuff[0]  = ((data[1]|data[2]<< 8)                  & 0x07FF);
+			FRSKYD16_SendDataBuff[1]  = ((data[2]>>3|data[3]<<5)                & 0x07FF);
+			FRSKYD16_SendDataBuff[2]  = ((data[3]>>6|data[4]<<2|data[5]<<10)    & 0x07FF);
+			FRSKYD16_SendDataBuff[3]  = ((data[5]>>1|data[6]<<7)                & 0x07FF);
+			FRSKYD16_SendDataBuff[4]  = ((data[6]>>4|data[7]<<4)                & 0x07FF);
+			FRSKYD16_SendDataBuff[5]  = ((data[7]>>7|data[8]<<1|data[9]<<9)     & 0x07FF);
+			FRSKYD16_SendDataBuff[6]  = ((data[9]>>2|data[10]<<6)               & 0x07FF);
+			FRSKYD16_SendDataBuff[7]  = ((data[10]>>5|data[11]<<3)              & 0x07FF);
+			FRSKYD16_SendDataBuff[8]  = ((data[12]|data[13]<< 8)                & 0x07FF);
+			FRSKYD16_SendDataBuff[9]  = ((data[13]>>3|data[14]<<5)              & 0x07FF);
+			FRSKYD16_SendDataBuff[10] = ((data[14]>>6|data[15]<<2|data[16]<<10) & 0x07FF);
+			FRSKYD16_SendDataBuff[11] = ((data[16]>>1|data[17]<<7)              & 0x07FF);
+			FRSKYD16_SendDataBuff[12] = ((data[17]>>4|data[18]<<4)              & 0x07FF);
+			FRSKYD16_SendDataBuff[13] = ((data[18]>>7|data[19]<<1|data[20]<<9)  & 0x07FF);
+			FRSKYD16_SendDataBuff[14] = ((data[20]>>2|data[21]<<6)              & 0x07FF);
+			FRSKYD16_SendDataBuff[15] = ((data[21]>>5|data[22]<<3)              & 0x07FF);
+
 			frame_received = 0;    
 		} // end frame received
 	}
