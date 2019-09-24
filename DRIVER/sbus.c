@@ -187,7 +187,7 @@ void sbus_checkrx(void)
 			if ( framestarted < 0)
 			{
 				// initialize sbus
-			  sbus_init();
+				sbus_init();
 			   // set in routine above "framestarted = 0;"    
 			}
 		}

@@ -95,7 +95,7 @@ static uint16_t  __attribute__((unused)) CalChannelData( uint8_t channel)
 {	
   	if(channel > 15) channel = 15 ; 
   	uint16_t DataTemp = FRSKYD16_SendDataBuff[channel] ; 
-	DataTemp = ((DataTemp*15)>>4)+1290;
+	DataTemp = (((DataTemp*15)>>4)+1290) - 1226;
   	if(channel>7)
 		DataTemp |= 2048;
 	
