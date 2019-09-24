@@ -29,7 +29,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f0xx_it.h"
-
+#include "spi.h"
+#include "frsky_d16.h"
 /** @addtogroup Template_Project
   * @{
   */
@@ -110,6 +111,23 @@ void SysTick_Handler(void)
 {
 }*/
 
+void TIM3_IRQHandler(void)
+{
+	//static unsigned int s = 0;
+	if(TIM_GetITStatus(TIM3,TIM_IT_Update) != RESET)
+	{
+		TIM_ClearITPendingBit(TIM3,TIM_IT_Update);
+//		if(s>=9)
+//		{
+			
+			ReadFRSKYD16(); 
+		PA1_LOW;
+//			s = 0;
+//		}
+		PA1_HIGH;
+//		s++;
+	}
+}
 /**
   * @}
   */ 

@@ -99,6 +99,9 @@ void spi_init(void)
 	
 	GPIO_InitStructure.GPIO_Pin = SPI_PIN_NSS;
 	GPIO_Init(SPI_NSS_PORT, &GPIO_InitStructure);
+	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+	GPIO_Init(SPI_NSS_PORT, &GPIO_InitStructure);
 }
 
 void SPI_WriteByte(uint8_t data)

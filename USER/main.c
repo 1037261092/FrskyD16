@@ -30,16 +30,23 @@
 #include "delay.h"
 #include "frsky_d16.h"
 #include "sbus.h"
+#include "timer.h"
 int main(void)
 {
 	delay_init(48);	
+	
+	TIM3_Int_Init(8815,48);
 	initFRSKYD16();
-	SetBind();
+	//SetBind();
 	sbus_init();
 	while (1)
 	{
-		ReadFRSKYD16(); 
-		delay_ms(20);
+//		ReadFRSKYD16(); 
+//		SPI_NSS_LOW;
+//		delay_ms(9);
+//		SPI_NSS_HIGH;
+//		delay_ms(1);
+//		delay_ms(9);
 	}
 }
 

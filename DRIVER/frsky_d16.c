@@ -95,18 +95,28 @@ static uint16_t  __attribute__((unused)) CalChannelData( uint8_t channel)
 {	
   	if(channel > 15) channel = 15 ; 
   	uint16_t DataTemp = FRSKYD16_SendDataBuff[channel] ; 
+	DataTemp = ((DataTemp*15)>>4)+1290;
+  	if(channel>7)
+		DataTemp |= 2048;
 	
-  	if(HighThrottle_flg == true)
-	{
-		if(channel == THROTTLE) 
-			DataTemp =  THR_Output_Min ; 
-		else 		        
-			DataTemp =  Output_Mid ; 
-	}
-	
-	return (uint16_t)(((DataTemp - 860) * 3) >> 1) + 64;		//mapped 0 ,2140(125%) range to 64,1984 ;
+	return DataTemp;		//mapped 0 ,2140(125%) range to 64,1984 ;
 }
 
+//static uint16_t  __attribute__((unused)) CalChannelData( uint8_t channel)
+//{	
+//  	if(channel > 15) channel = 15 ; 
+//  	uint16_t DataTemp = FRSKYD16_SendDataBuff[channel] ; 
+//	
+//  	if(HighThrottle_flg == true)
+//	{
+//		if(channel == THROTTLE) 
+//			DataTemp =  THR_Output_Min ; 
+//		else 		        
+//			DataTemp =  Output_Mid ; 
+//	}
+//	
+//	return (uint16_t)(((DataTemp - 860) * 3) >> 1) + 64;		//mapped 0 ,2140(125%) range to 64,1984 ;
+//}
 //==============================================================================
 //			SFHSS 快速切换发射通道
 //解释 : 因为上电时已经校准过频率，且回读了频率值，所以此处可以直接设置前面回读的
@@ -210,19 +220,22 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet()
 	SendPacket[8] = 0;
 	
 	//
-	if (lpass & 1) startChan += 8 ;
+	if (lpass & 1) 
+	{
+		startChan += 8 ;
+	}
 	
 	//发送通道数据
 	for(uint8_t i = 0; i <12 ; i+=3)
 	{
 	  	//12 bytes
 		chan_0 = CalChannelData(startChan);		 
-		if(lpass & 1 ) chan_0 += 2048;			
+	//	if(lpass & 1 ) chan_0 += 2048;			
 		startChan += 1 ;
 		
 		//
 		chan_1 = CalChannelData(startChan);		
-		if(lpass & 1 ) chan_1+= 2048;		
+	//	if(lpass & 1 ) chan_1+= 2048;		
 		startChan+=1;
 		
 		//
@@ -318,7 +331,7 @@ uint16_t ReadFRSKYD16(void)
 				CC2500_Strobe(CC2500_SIDLE);
 				CC2500_WriteData(SendPacket, FRSKYD16_PACKET_LEN);
 				++FRSKYD16_BindCounts ; 
-				//FRSKYD16Phase = FRSKYD16_BIND_PASSBACK ; 
+				FRSKYD16Phase = FRSKYD16_BIND_PASSBACK ; 
 				Cnts = 0 ; 
 			}  
 			else
@@ -326,20 +339,7 @@ uint16_t ReadFRSKYD16(void)
 			  	Bind_flg = false ; 
 				FRSKYD16_BindCounts = 0 ; 
 				FRSKYD16_Channel_Num = 0 ; 
-				FRSKYD16_InitDeviceAddr(Bind_flg) ;
-				
-				//注意 : 只在正常情况下 ， 清零对码指示灯闪烁 ; 如果进入校准后 ， 会在另外一个地方清零
-//				if(MenuCtrl.RunStep == __stSarttUp)
-//				{
-//					LED_State_Shake &= ~LED_BIND  ; 
-//					LED_State_ON    |= LED_BIND   ; 
-//					
-//					if(RunStatus == __stNormal)
-//					{
-//						beepCmd(BindFreCounts , __stStop);
-//					}
-//				}
-//				
+				FRSKYD16_InitDeviceAddr(Bind_flg) ;				
 				FRSKYD16Phase = FRSKYD16_DATA ; 
 				
 			}
@@ -361,13 +361,13 @@ uint16_t ReadFRSKYD16(void)
 		  	return 2634 ;
 		  
 		//发送数据包
-		case FRSKYD16_DATA :			
+		case FRSKYD16_DATA :
 		  	FRSKYD16_calc_next_chan();
 			FRSKYD16_tune_chan_fast();
 			FRSKYD16_build_Data_packet();
 			CC2500_Strobe(CC2500_SIDLE);	
 			CC2500_WriteData(SendPacket, FRSKYD16_PACKET_LEN);
-			FRSKYD16Phase = FRSKYD16_TUNE ;
+			//FRSKYD16Phase = FRSKYD16_TUNE ;
 			Cnts = 0 ; 
 			return 1555 ;  
 			
@@ -419,20 +419,7 @@ void initFRSKYD16(void)
 	CommunicationError_flg = CC2500_Init() ; 
 	if(CommunicationError_flg == true)
 	{
-	  	//无线初始化失败，故障报警
-//	  	if(RunStatus < __stRF_err)				//状态更新前需要判断状态等级，是否更高(否则不更新,不提示)
-//		{
-//			beepCmd(NormalFreCounts , __stRFModelLostWarning);
-//			RunStatus = __stRF_err ; 
-//			LED_State_ON = LED_NONE ; 
-//			LED_State_Shake = LED_ALL ; //所有通道LED闪烁
-//		}
-		
-		//======================================================
-		//跳转到故障报警状态
-		//======================================================
-//		MenuCtrl.RunStep = __stError ;
-//		MenuCtrl.Sub_RunStep = 0 ; 
+			//初始化失败需要做的
 	}
 	else
 	{

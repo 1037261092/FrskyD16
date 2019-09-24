@@ -127,13 +127,13 @@ void sbus_checkrx(void)
 {
 	if ( framestarted == 0)
 	{
-		while (  rx_end != rx_start )      //判断缓冲区是否为空，当队列头等于队列尾的时候  说明缓冲区为空
+		while (  rx_end != rx_start )            //判断缓冲区是否为空，当队列头等于队列尾的时候  说明缓冲区为空
 		{ 
 			if ( rx_buffer[rx_start] == 0x0f )    //如果不为空，那么我们就要先找到 SBUS 协议的头  0x0f
 			{
 				// start detected
-				framestart = rx_start;        //找到头   开始接收
-				framestarted = 1;             //启动数据接收
+				framestart = rx_start;            //找到头   开始接收
+				framestarted = 1;                 //启动数据接收
 				stat_framestartcount++; 
 				break;                
 			}         
@@ -194,22 +194,22 @@ void sbus_checkrx(void)
 		  
 		if ( frame_received )
 		{ 		
-			FRSKYD16_SendDataBuff[0]  = ((data[1]|data[2]<< 8)                  & 0x07FF);
-			FRSKYD16_SendDataBuff[1]  = ((data[2]>>3|data[3]<<5)                & 0x07FF);
-			FRSKYD16_SendDataBuff[2]  = ((data[3]>>6|data[4]<<2|data[5]<<10)    & 0x07FF);
-			FRSKYD16_SendDataBuff[3]  = ((data[5]>>1|data[6]<<7)                & 0x07FF);
-			FRSKYD16_SendDataBuff[4]  = ((data[6]>>4|data[7]<<4)                & 0x07FF);
-			FRSKYD16_SendDataBuff[5]  = ((data[7]>>7|data[8]<<1|data[9]<<9)     & 0x07FF);
-			FRSKYD16_SendDataBuff[6]  = ((data[9]>>2|data[10]<<6)               & 0x07FF);
-			FRSKYD16_SendDataBuff[7]  = ((data[10]>>5|data[11]<<3)              & 0x07FF);
-			FRSKYD16_SendDataBuff[8]  = ((data[12]|data[13]<< 8)                & 0x07FF);
-			FRSKYD16_SendDataBuff[9]  = ((data[13]>>3|data[14]<<5)              & 0x07FF);
-			FRSKYD16_SendDataBuff[10] = ((data[14]>>6|data[15]<<2|data[16]<<10) & 0x07FF);
-			FRSKYD16_SendDataBuff[11] = ((data[16]>>1|data[17]<<7)              & 0x07FF);
-			FRSKYD16_SendDataBuff[12] = ((data[17]>>4|data[18]<<4)              & 0x07FF);
-			FRSKYD16_SendDataBuff[13] = ((data[18]>>7|data[19]<<1|data[20]<<9)  & 0x07FF);
-			FRSKYD16_SendDataBuff[14] = ((data[20]>>2|data[21]<<6)              & 0x07FF);
-			FRSKYD16_SendDataBuff[15] = ((data[21]>>5|data[22]<<3)              & 0x07FF);
+			FRSKYD16_SendDataBuff[0]  = ((data[1]  |    data[2]<<8)                  & 0x07FF);
+			FRSKYD16_SendDataBuff[1]  = ((data[2]  >>3 |data[3]<<5)                  & 0x07FF);
+			FRSKYD16_SendDataBuff[2]  = ((data[3]  >>6 |data[4]<<2   |data[5]<<10)   & 0x07FF);
+			FRSKYD16_SendDataBuff[3]  = ((data[5]  >>1 |data[6]<<7)                  & 0x07FF);
+			FRSKYD16_SendDataBuff[4]  = ((data[6]  >>4 |data[7]<<4)                  & 0x07FF);
+			FRSKYD16_SendDataBuff[5]  = ((data[7]  >>7 |data[8]<<1   |data[9]<<9)    & 0x07FF);
+			FRSKYD16_SendDataBuff[6]  = ((data[9]  >>2 |data[10]<<6)                 & 0x07FF);
+			FRSKYD16_SendDataBuff[7]  = ((data[10] >>5 |data[11]<<3)                 & 0x07FF);
+			FRSKYD16_SendDataBuff[8]  = ((data[12] |    data[13]<<8)                 & 0x07FF);
+			FRSKYD16_SendDataBuff[9]  = ((data[13] >>3 |data[14]<<5)                 & 0x07FF);
+			FRSKYD16_SendDataBuff[10] = ((data[14] >>6 |data[15]<<2  |data[16]<<10)  & 0x07FF);
+			FRSKYD16_SendDataBuff[11] = ((data[16] >>1 |data[17]<<7)                 & 0x07FF);
+			FRSKYD16_SendDataBuff[12] = ((data[17] >>4 |data[18]<<4)                 & 0x07FF);
+			FRSKYD16_SendDataBuff[13] = ((data[18] >>7 |data[19]<<1  |data[20]<<9)   & 0x07FF);
+			FRSKYD16_SendDataBuff[14] = ((data[20] >>2 |data[21]<<6)                 & 0x07FF);
+			FRSKYD16_SendDataBuff[15] = ((data[21] >>5 |data[22]<<3)                 & 0x07FF);
 
 			frame_received = 0;    
 		} // end frame received

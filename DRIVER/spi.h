@@ -28,7 +28,8 @@
 #define SPI_NSS_LOW  	 (SPI_NSS_PORT->BRR   = SPI_PIN_NSS)
 #define SPI_NSS_HIGH 	 (SPI_NSS_PORT->BSRR  = SPI_PIN_NSS)
 
-
+#define PA1_LOW    (SPI_NSS_PORT->BRR   = GPIO_Pin_1)
+#define PA1_HIGH   (SPI_NSS_PORT->BSRR  = GPIO_Pin_1)
 
 void spi_init(void);
 void SPI_WriteByte(uint8_t TxData);
