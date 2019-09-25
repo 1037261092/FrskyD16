@@ -416,6 +416,11 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\cc2500.c</FilePath>
             </File>
+            <File>
+              <FileName>key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\key.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

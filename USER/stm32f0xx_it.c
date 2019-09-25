@@ -113,19 +113,12 @@ void SysTick_Handler(void)
 
 void TIM3_IRQHandler(void)
 {
-	//static unsigned int s = 0;
 	if(TIM_GetITStatus(TIM3,TIM_IT_Update) != RESET)
 	{
-		TIM_ClearITPendingBit(TIM3,TIM_IT_Update);
-//		if(s>=9)
-//		{
-			
-			ReadFRSKYD16(); 
+		TIM_ClearITPendingBit(TIM3,TIM_IT_Update);		
+		TIM3->ARR = ReadFRSKYD16(); 
 		PA1_LOW;
-//			s = 0;
-//		}
 		PA1_HIGH;
-//		s++;
 	}
 }
 /**

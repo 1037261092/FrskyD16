@@ -4,7 +4,7 @@
 uint8_t rx_buffer[RX_BUFF_SIZE];    //spekFrame[SPEK_FRAME_SIZE]
 uint8_t rx_start = 0;
 uint8_t rx_end = 0;
-uint16_t rx_time[RX_BUFF_SIZE];			//????
+uint16_t rx_time[RX_BUFF_SIZE];		
 int stat_overflow;
 
 int framestarted = -1;
