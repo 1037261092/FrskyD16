@@ -32,6 +32,7 @@
 #include "sbus.h"
 #include "timer.h"
 #include "key.h"
+#include "iwdog.h"
 int main(void)
 {
 	delay_init(48);		
@@ -39,6 +40,7 @@ int main(void)
 	initFRSKYD16();
 	sbus_init();
 	key_init();
+	WDG_Config();
 	while (1)
 	{
 

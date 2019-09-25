@@ -119,6 +119,7 @@ void TIM3_IRQHandler(void)
 		TIM3->ARR = ReadFRSKYD16(); 
 		PA1_LOW;
 		PA1_HIGH;
+		IWDG_ReloadCounter();
 	}
 }
 /**

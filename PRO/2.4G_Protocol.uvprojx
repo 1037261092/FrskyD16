@@ -566,6 +566,11 @@
               <FileType>1</FileType>
               <FilePath>..\DRIVER\sbus.c</FilePath>
             </File>
+            <File>
+              <FileName>iwdog.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\FUNCTION\iwdog.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

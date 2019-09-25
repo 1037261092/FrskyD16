@@ -61,10 +61,10 @@ static void __attribute__((unused)) FRSKYD16_TuneChannel(uint8_t Channel)
 	CC2500_Strobe(CC2500_SCAL);						//校准频率合成器并关闭
 }
 
-//==============================================================================
-//				CRC校验
-//==============================================================================
-static const uint16_t CRC_Short[16] = 	//CRC 校验种子
+/*-------------------------------------------------------------
+							CRC 
+---------------------------------------------------------------*/
+static const uint16_t CRC_Short[16] = 	//CRC
 {
 	0x0000, 0x1189, 0x2312, 0x329B, 0x4624, 0x57AD, 0x6536, 0x74BF,
 	0x8C48, 0x9DC1, 0xAF5A, 0xBED3, 0xCA6C, 0xDBE5, 0xE97E, 0xF8F7 
@@ -354,7 +354,7 @@ uint16_t ReadFRSKYD16(void)
 			FRSKYD16_build_Data_packet();
 			CC2500_Strobe(CC2500_SIDLE);	
 			CC2500_WriteData(SendPacket, FRSKYD16_PACKET_LEN);
-			return 8815 ;  
+			return 8790 ;  
 	  
 	}
 	return 0 ; 
