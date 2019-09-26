@@ -4,7 +4,11 @@
 #include "function.h"
 #include <stdlib.h>
 #include "sbus.h"
-#define FRSKYD16_PACKET_LEN  30
+#ifdef LBT
+	#define FRSKYD16_PACKET_LEN  33
+#else
+	#define FRSKYD16_PACKET_LEN  30
+#endif
 #define FRSKYD16_BINDCHANNEL 47 						//The 47th channel is fixed as a bound channel 
 
 bool     Bind_flg = false ; 
@@ -135,8 +139,12 @@ static void FRSKYD16_calc_next_chan(void)
 ---------------------------------------------------------------------------------*/
 static void __attribute__((unused)) Frsky_D16_build_Bind_packet(void)
 {
-	//固定码
+		//固定码
+#ifdef LBT
+	SendPacket[0] = 0x20;
+#else
 	SendPacket[0] = 0x1D;
+#endif
 	SendPacket[1] = 0x03;
 	SendPacket[2] = 0x01;
 	//遥控器ID
@@ -169,12 +177,20 @@ static void __attribute__((unused)) Frsky_D16_build_Bind_packet(void)
 	SendPacket[25] 	= 0x00;
 	SendPacket[26] 	= 0x00;
 	SendPacket[27] 	= 0x00;
-	
+#ifdef LBT
+	SendPacket[28] 	= 0x00;
+	SendPacket[29] 	= 0x00;
+	SendPacket[30] 	= 0x00;
+	uint16_t lcrc = crc_x(&SendPacket[3], 28);
+	SendPacket[31] 	= lcrc >> 8;;
+	SendPacket[32] 	= lcrc;
+#else
 	//数据包校验和
 	uint16_t lcrc = crc_x(&SendPacket[3], 25);
 	
 	SendPacket[28] = lcrc >> 8;
 	SendPacket[29] = lcrc;
+#endif
 }
 
 /*---------------------------------------------------------------------

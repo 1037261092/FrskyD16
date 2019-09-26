@@ -8,23 +8,63 @@ static const uint8_t cc2500_conf[FRSKYD16_CONFIG_CNTS][2]=
 {
 	{ CC2500_02_IOCFG0   , 0x06 },	
 	{ CC2500_00_IOCFG2   , 0x06 },	
-	{ CC2500_17_MCSM1    , 0x0c },  
-	{ CC2500_18_MCSM0    , 0x18 },  
-	{ CC2500_06_PKTLEN   , 0x1E },  
+#ifdef LBT
+	{ CC2500_17_MCSM1    , 0x0E },
+#else
+	{ CC2500_17_MCSM1    , 0x0c },	
+#endif	
+	{ CC2500_18_MCSM0    , 0x18 },
+	
+#ifdef LBT
+	{ CC2500_06_PKTLEN   , 0x23 },
+#else
+	{ CC2500_06_PKTLEN   , 0x1E }, 
+#endif		 
 	{ CC2500_07_PKTCTRL1 , 0x04 },  
 	{ CC2500_08_PKTCTRL0 , 0x01 },  
-	{ CC2500_3E_PATABLE  , 0xff },  
-	{ CC2500_0B_FSCTRL1  , 0x0A },  
+	{ CC2500_3E_PATABLE  , 0xff }, 
+#ifdef LBT
+	{ CC2500_0B_FSCTRL1   , 0x08 },
+#else
+	{ CC2500_0B_FSCTRL1  , 0x0A },   
+#endif	
 	{ CC2500_0C_FSCTRL0  , 0x00 },	
-	{ CC2500_0D_FREQ2    , 0x5c },	       
-	{ CC2500_0E_FREQ1    , 0x76 },
-	{ CC2500_0F_FREQ0    , 0x27 },
-	{ CC2500_10_MDMCFG4  , 0x7B },	
-	{ CC2500_11_MDMCFG3  , 0x61 },     
+	{ CC2500_0D_FREQ2    , 0x5c },	
+
+#ifdef LBT
+	{ CC2500_0E_FREQ1    , 0x80 },
+#else
+	{ CC2500_0E_FREQ1    , 0x76 },  
+#endif	
+	
+#ifdef LBT
+	{ CC2500_0F_FREQ0    , 0x00 },
+#else
+	{ CC2500_0F_FREQ0    , 0x27 }, 
+#endif			
+	{ CC2500_10_MDMCFG4  , 0x7B },
+	
+#ifdef LBT
+	{ CC2500_11_MDMCFG3  , 0xF8 },
+#else
+	{ CC2500_11_MDMCFG3  , 0x61 }, 
+#endif	
+	    
+#ifdef LBT
+	{ CC2500_12_MDMCFG2  , 0x03 },
+#else
 	{ CC2500_12_MDMCFG2  , 0x13 },  
+#endif		
+	
 	{ CC2500_13_MDMCFG1  , 0x23 },  
-	{ CC2500_14_MDMCFG0  , 0x7a },  
+	{ CC2500_14_MDMCFG0  , 0x7a },
+	
+#ifdef LBT
+	{ CC2500_15_DEVIATN  , 0x53 },
+#else
 	{ CC2500_15_DEVIATN  , 0x51 },  
+#endif
+	
 	{ CC2500_1B_AGCCTRL2 , 0x03 },	
 	{ CC2500_19_FOCCFG   , 0x16 }, 
 	{ CC2500_1A_BSCFG    , 0x6c },	
