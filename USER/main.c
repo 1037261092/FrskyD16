@@ -36,14 +36,13 @@
 int main(void)
 {
 	delay_init(48);		
-	TIM3_Int_Init(8815,48);
 	initFRSKYD16();
 	sbus_init();
 	key_init();
 	WDG_Config();
+	TIM3_Int_Init(8815,48);    // open timer interrupt 
 	while (1)
 	{
-
 	}
 }
 

@@ -62,7 +62,8 @@ static void __attribute__((unused)) FRSKYD16_TuneChannel(uint8_t Channel)
 	CC2500_Strobe(CC2500_SIDLE);						//进入闲置状态
 	CC2500_WriteReg(CC2500_25_FSCAL1, FRSKYD16_calData[Channel]);		//设置发送通道
 	CC2500_WriteReg(CC2500_0A_CHANNR, FRSKYD16_HOPChannel[Channel]);	//设置发送通道
-	CC2500_Strobe(CC2500_SCAL);						//校准频率合成器并关闭
+	//CC2500_Strobe(CC2500_SCAL);						//校准频率合成器并关闭
+	delay_us(20);
 }
 
 /*-------------------------------------------------------------
@@ -339,6 +340,7 @@ uint16_t ReadFRSKYD16(void)
 	{
 	
 	}
+	
 	switch(FRSKYD16Phase)
 	{
 		//send bind data
@@ -346,10 +348,12 @@ uint16_t ReadFRSKYD16(void)
 		  	if(FRSKYD16_BindCounts < 1200)
 			{
 				FRSKYD16_TuneChannel(FRSKYD16_BINDCHANNEL) ; 
+				CC2500_SetPower(CC2500_POWER_1);
 				CC2500_Strobe(CC2500_SFRX);
 				Frsky_D16_build_Bind_packet();
+				delay_us(19);
 				CC2500_Strobe(CC2500_SIDLE);
-				CC2500_WriteData(SendPacket, FRSKYD16_PACKET_LEN);
+				CC2500_WriteData(SendPacket, SendPacket[0] + 1);
 				++FRSKYD16_BindCounts ; 
 				
 			}  
@@ -358,11 +362,12 @@ uint16_t ReadFRSKYD16(void)
 			  	Bind_flg = false ; 
 				FRSKYD16_BindCounts = 0 ; 
 				FRSKYD16_Channel_Num = 0 ; 
-				FRSKYD16_InitDeviceAddr(Bind_flg) ;				
+				FRSKYD16_InitDeviceAddr(Bind_flg) ;	
+				CC2500_SetPower(CC2500_POWER_17);				
 				FRSKYD16Phase = FRSKYD16_DATA ; 
 				
 			}
-			return 8815 ;
+			return 8830 ;
 		// Frsky D16 data
 		case FRSKYD16_DATA :
 		  	FRSKYD16_calc_next_chan();
@@ -370,7 +375,7 @@ uint16_t ReadFRSKYD16(void)
 			FRSKYD16_build_Data_packet();
 			CC2500_Strobe(CC2500_SIDLE);	
 			CC2500_WriteData(SendPacket, FRSKYD16_PACKET_LEN);
-			return 8790 ;  
+			return 8830 ;  
 	  
 	}
 	return 0 ; 

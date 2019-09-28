@@ -37,12 +37,6 @@ typedef enum
 	AUX12		= 15 , 
 }ChannelTypeDef ;
 
-enum TXRX_State 
-{
-	TXRX_OFF,
-	TX_EN,
-	RX_EN
-};
 
 extern bool CommunicationError_flg ;
 

@@ -6,6 +6,7 @@
 
 //#define HARDWARE_SPI
 
+#define DELAY()    asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");
 #define SPI_MOSI_PORT         GPIOA
 #define SPI_MISO_PORT         GPIOA
 #define SPI_SCK_PORT          GPIOA

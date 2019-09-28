@@ -14,15 +14,19 @@ void spi_init(void)
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1 , ENABLE);
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA , ENABLE);
 	
+	SPI_Cmd(SPI1, DISABLE);
+	SPI1_PINS_InitStruct.GPIO_Pin = SPI_PIN_MISO;
+	SPI1_PINS_InitStruct.GPIO_Mode = GPIO_Mode_AF;
+	SPI1_PINS_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	SPI1_PINS_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(SPI_MISO_PORT,&SPI1_PINS_InitStruct);
+	
 	SPI1_PINS_InitStruct.GPIO_Mode = GPIO_Mode_AF;
 	SPI1_PINS_InitStruct.GPIO_OType = GPIO_OType_PP;
 	SPI1_PINS_InitStruct.GPIO_PuPd = GPIO_PuPd_DOWN;
-	SPI1_PINS_InitStruct.GPIO_Speed = GPIO_Speed_10MHz;
+	SPI1_PINS_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 	SPI1_PINS_InitStruct.GPIO_Pin = SPI_PIN_MOSI;
 	GPIO_Init(SPI_MOSI_PORT,&SPI1_PINS_InitStruct);
-	
-	SPI1_PINS_InitStruct.GPIO_Pin = SPI_PIN_MISO;
-	GPIO_Init(SPI_MISO_PORT,&SPI1_PINS_InitStruct);
 	
 	SPI1_PINS_InitStruct.GPIO_Pin = SPI_PIN_SCK;
 	GPIO_Init(SPI_SCK_PORT,&SPI1_PINS_InitStruct);
@@ -34,6 +38,7 @@ void spi_init(void)
 	SPI1_PINS_InitStruct.GPIO_Pin = SPI_PIN_NSS;
 	SPI1_PINS_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 	SPI1_PINS_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
+	SPI1_PINS_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;
 	GPIO_Init(SPI_NSS_PORT,&SPI1_PINS_InitStruct);
 	
 	SPI_I2S_DeInit(SPI1);
@@ -52,23 +57,28 @@ void spi_init(void)
 }
 
 void SPI_WriteByte(uint8_t TxData)
-{
-    while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET);	
+{	
     SPI_SendData8(SPI1, TxData);
+	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) != RESET);
 }
 
 uint8_t SPI_ReadByte(void)
 {
-    while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);    
-    return(SPI_ReceiveData8(SPI1));
+	uint8_t rx_data;
+    rx_data = SPI_ReceiveData8(SPI1);
+	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) != RESET); 
+	return rx_data;
 }
 
 uint8_t SPI_Transfer(uint8_t data)
 {
-    while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET);
-    SPI_SendData8(SPI1, data);
-    while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
-    return SPI_ReceiveData8(SPI1);
+	while((SPI1->SR & SPI_I2S_FLAG_TXE) == (uint16_t)RESET);
+	SPI_SendData8(SPI1,data);
+	SPI_SendData8(SPI1,0x00);
+	//while((SPI1->SR & SPI_I2S_FLAG_RXNE) == (uint16_t)RESET);
+	uint8_t rx_data = SPI_ReceiveData8(SPI1);
+	delay_us(100);
+	return rx_data;
 }
 
 #else
@@ -117,9 +127,9 @@ void SPI_WriteByte(uint8_t data)
 			SPI_MOSI_LOW;
 		}
 		SPI_SCK_HIGH;
-		delay_us(1);
+		DELAY();
 		SPI_SCK_LOW;
-		delay_us(1);
+		DELAY();
 		
 	}
 }
@@ -130,11 +140,11 @@ uint8_t SPI_ReadByte(void)
 	for ( int i = 7 ; i >=0 ; i--)
 	{						
 		SPI_SCK_HIGH;
-		delay_us(1);
+		DELAY();
 		recv = recv<<1;
         recv = recv|((SPI_MISO_PORT->IDR & (int)SPI_PIN_MISO)?1:0);        
 		SPI_SCK_LOW;
-		delay_us(1);		
+		DELAY();		
 	}	
     return recv;
 }
@@ -143,7 +153,7 @@ uint8_t SPI_Transfer(uint8_t data)
 {
 	
     SPI_WriteByte(data);
-	delay_us(1);
+	DELAY();
     return SPI_ReadByte();
 }
 #endif
