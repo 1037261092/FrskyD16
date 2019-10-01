@@ -112,14 +112,14 @@ static uint16_t  __attribute__((unused)) CalChannelData( uint8_t channel)
 static void __attribute__((unused)) FRSKYD16_tune_chan_fast(void)
 {
 	CC2500_Strobe(CC2500_SIDLE);
-	CC2500_WriteReg(CC2500_0D_FREQ2 , Fre_Carrier_H);
-	CC2500_WriteReg(CC2500_0E_FREQ1 , Fre_Carrier_M);
-	CC2500_WriteReg(CC2500_0F_FREQ0 , Fre_Carrier_L);
-	delay_us(2);
-	CC2500_Strobe(CC2500_SIDLE);
-	CC2500_WriteReg(CC2500_0D_FREQ2 , Fre_Carrier_H);
-	CC2500_WriteReg(CC2500_0E_FREQ1 , Fre_Carrier_M);
-	CC2500_WriteReg(CC2500_0F_FREQ0 , Fre_Carrier_L);
+//	CC2500_WriteReg(CC2500_0D_FREQ2 , Fre_Carrier_H);
+//	CC2500_WriteReg(CC2500_0E_FREQ1 , Fre_Carrier_M);
+//	CC2500_WriteReg(CC2500_0F_FREQ0 , Fre_Carrier_L);
+//	delay_us(2);
+//	CC2500_Strobe(CC2500_SIDLE);
+//	CC2500_WriteReg(CC2500_0D_FREQ2 , Fre_Carrier_H);
+//	CC2500_WriteReg(CC2500_0E_FREQ1 , Fre_Carrier_M);
+//	CC2500_WriteReg(CC2500_0F_FREQ0 , Fre_Carrier_L);
 	CC2500_WriteReg(CC2500_25_FSCAL1, FRSKYD16_calData[FRSKYD16_Channel_Num]);
 	CC2500_WriteReg(CC2500_0A_CHANNR, FRSKYD16_HOPChannel[FRSKYD16_Channel_Num]);
 	//CC2500_Strobe(CC2500_SCAL);
@@ -204,7 +204,11 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet()
 	uint16_t chan_1 ; 
 	uint8_t startChan = 0;
 	sbus_checkrx();
-	SendPacket[0] 	= 0x1D;       //FCC packet head
+	#ifdef LBT
+	SendPacket[0] = 0x20;
+#else
+	SendPacket[0] = 0x1D;
+#endif
 	//telemetry radio ID
 	SendPacket[1]   = (TransmitterID >> 8) & 0xFF  ;
 	SendPacket[2]   = TransmitterID & 0xFF ;           
@@ -233,8 +237,7 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet()
 	{
 		chan_0 = CalChannelData(startChan);		
 		startChan++ ;
-		
-		
+	
 		chan_1 = CalChannelData(startChan);			
 		startChan++;
 		
@@ -246,17 +249,24 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet()
 	SendPacket[21] = 0x08 ; 
 	//下一包数据 发送 后 8 通
 	lpass += 1 ;
-	
+#ifdef LBT
+	for (uint8_t i=22;i<31;i++)
+	{
+		SendPacket[i]=0;
+	}
+	uint16_t lcrc = crc_x(&SendPacket[3], 28);
+	SendPacket[31]=lcrc>>8;   //high byte
+	SendPacket[32]=lcrc;      //low byte
+#else
 	for (uint8_t i=22;i<28;i++)
 	{
 		SendPacket[i]=0;
 	}
 	uint16_t lcrc = crc_x(&SendPacket[3], 25);
-	
 	SendPacket[28]=lcrc>>8;   //high byte
 	SendPacket[29]=lcrc;      //low byte
+#endif
 }
-
 
 //==============================================================================
 //FRSKYD16 : 计算 FRSKYD16 通道(通过计算得到 47 个通道 。轮询时，在这47个通道间跳频)
