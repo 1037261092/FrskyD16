@@ -31,6 +31,7 @@
 #include "stm32f0xx_it.h"
 #include "spi.h"
 #include "frsky_d16.h"
+#include "s_fhss.h"
 /** @addtogroup Template_Project
   * @{
   */
@@ -115,8 +116,13 @@ void TIM3_IRQHandler(void)
 {
 	if(TIM_GetITStatus(TIM3,TIM_IT_Update) != RESET)
 	{
-		TIM_ClearITPendingBit(TIM3,TIM_IT_Update);		
+		TIM_ClearITPendingBit(TIM3,TIM_IT_Update);	
+#ifdef S_FHSS
+		TIM3->ARR = ReadSFHSS();
+#else
 		TIM3->ARR = ReadFRSKYD16(); 
+#endif		
+		
 		PA1_LOW;
 		PA1_HIGH;
 		IWDG_ReloadCounter();

@@ -9,49 +9,49 @@ static const uint8_t cc2500_conf[FRSKYD16_CONFIG_CNTS][2]=
 	{ CC2500_02_IOCFG0   , 0x06 },	
 	{ CC2500_00_IOCFG2   , 0x06 },	
 #ifdef LBT
-	{ CC2500_17_MCSM1    , 0x0E },
+	{ CC2500_17_MCSM1    , 0x0E },   //接收数据后保持在RX 状态，发送数据后保持在TX
 #else
-	{ CC2500_17_MCSM1    , 0x0c },	
+	{ CC2500_17_MCSM1    , 0x0c },	 //接收数据后保持在RX 状态，发送数据后保持在空闲
 #endif	
 	{ CC2500_18_MCSM0    , 0x18 },
 	
 #ifdef LBT
-	{ CC2500_06_PKTLEN   , 0x23 },
-#else
-	{ CC2500_06_PKTLEN   , 0x1E }, 
+	{ CC2500_06_PKTLEN   , 0x23 },    //数据包长度为35
+#else 
+	{ CC2500_06_PKTLEN   , 0x1E },    //数据包长度为30
 #endif		 
-	{ CC2500_07_PKTCTRL1 , 0x04 },  
+	{ CC2500_07_PKTCTRL1 , 0x04 },    
 	{ CC2500_08_PKTCTRL0 , 0x01 },  
 	{ CC2500_3E_PATABLE  , 0xff }, 
 #ifdef LBT
-	{ CC2500_0B_FSCTRL1   , 0x08 },
+	{ CC2500_0B_FSCTRL1  , 0x08 },    //配置中频（IF）频率 = F(xosc)/2^10*FREQ_IF
 #else
-	{ CC2500_0B_FSCTRL1  , 0x0A },   
+	{ CC2500_0B_FSCTRL1  , 0x0A },    //配置中频（IF）频率 = F(xosc)/2^10*FREQ_IF
 #endif	
 	{ CC2500_0C_FSCTRL0  , 0x00 },	
 	{ CC2500_0D_FREQ2    , 0x5c },	
 
 #ifdef LBT
-	{ CC2500_0E_FREQ1    , 0x80 },
+	{ CC2500_0E_FREQ1    , 0x80 },    //频率控制
 #else
 	{ CC2500_0E_FREQ1    , 0x76 },  
 #endif	
 	
 #ifdef LBT
-	{ CC2500_0F_FREQ0    , 0x00 },
+	{ CC2500_0F_FREQ0    , 0x00 },     //频率控制
 #else
 	{ CC2500_0F_FREQ0    , 0x27 }, 
 #endif			
 	{ CC2500_10_MDMCFG4  , 0x7B },
 	
 #ifdef LBT
-	{ CC2500_11_MDMCFG3  , 0xF8 },
+	{ CC2500_11_MDMCFG3  , 0xF8 },     //调制解调器速率配置
 #else
 	{ CC2500_11_MDMCFG3  , 0x61 }, 
 #endif	
 	    
 #ifdef LBT
-	{ CC2500_12_MDMCFG2  , 0x03 },
+	{ CC2500_12_MDMCFG2  , 0x03 },      //调制解调器的调制方式设置
 #else
 	{ CC2500_12_MDMCFG2  , 0x13 },  
 #endif		
@@ -180,6 +180,7 @@ void CC2500_WriteData(uint8_t *dpbuffer, uint8_t len)
 	CC2500_WriteReglistrMulti(CC2500_3F_TXFIFO,dpbuffer,len);
 	CC2500_Strobe(CC2500_STX);
 }
+
 
 bool CC2500_Init(void)
 {

@@ -33,10 +33,16 @@
 #include "timer.h"
 #include "key.h"
 #include "iwdog.h"
+#include "s_fhss.h"
 int main(void)
 {
-	delay_init(48);		
+	delay_init(48);
+	
+#ifdef S_FHSS
+	initSFHSS();
+#else
 	initFRSKYD16();
+#endif
 	sbus_init();
 	key_init();
 	WDG_Config();
