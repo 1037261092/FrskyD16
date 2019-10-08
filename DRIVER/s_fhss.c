@@ -4,6 +4,7 @@
 #include "function.h"
 #include "delay.h"
 #include "spi.h"
+#include "sbus.h"
 #define SFHSS_COARSE	0
 
 #define SFHSS_PACKET_LEN 13
@@ -16,7 +17,6 @@ uint8_t  rf_ch_num;
 uint8_t  calData[50];
 uint16_t counter;
 uint8_t  packet[40] ; 	
-
 uint8_t  phase;
 const uint8_t CH_AETR[]={AILERON, ELEVATOR, THROTTLE, RUDDER, CH5, CH6, CH7, CH8, CH9, CH10, CH11, CH12, CH13, CH14, CH15, CH16};
 enum {
@@ -79,7 +79,7 @@ static void __attribute__((unused)) SFHSS_tune_freq()
 	
 		CC2500_WriteReg(CC2500_0C_FSCTRL0, 0x0A);
 		CC2500_WriteReg(CC2500_0F_FREQ0, SFHSS_FREQ0_VAL + SFHSS_COARSE);
-		phase = SFHSS_START;	// Restart the tune process if option is changed to get good tuned values
+	//	phase = SFHSS_START;	// Restart the tune process if option is changed to get good tuned values
 }
 
 static void __attribute__((unused)) SFHSS_tune_chan_fast()
@@ -181,9 +181,9 @@ static void __attribute__((unused)) SFHSS_build_data_packet()
 	//Coding below matches the Futaba T8J transmission scheme DATA1->CH1-4, DATA2->CH5-8, DATA1->CH5-8, DATA2->CH1-4,...
 	// XK, T10J and TM-FH are different with a classic DATA1->CH1-4, DATA2->CH5-8,...
 	//Failsafe is sent twice every couple of seconds (unknown but >5s) 
-	
 	uint8_t command= (phase == SFHSS_DATA1) ? 0 : 1;	// Building packet for Data1 or Data2
 	counter+=command;
+	
 //	#ifdef FAILSAFE_ENABLE
 //		if( (counter&0x3FC) == 0x3FC && IS_FAILSAFE_VALUES_on)
 //		{	// Transmit failsafe data twice every 7s
@@ -192,7 +192,7 @@ static void __attribute__((unused)) SFHSS_build_data_packet()
 //		}
 //		else
 //	#endif
-	command|=0x02;								// Assuming packet[0] == 0x81
+	command|=0x02;								        // Assuming packet[0] == 0x81
 	counter&=0x3FF;										// Reset failsafe counter
 	if(counter&1) command|=0x08;						// Transmit lower and upper channels twice in a row
 
@@ -274,12 +274,11 @@ uint16_t ReadSFHSS(void)
 				rf_ch_num = 0;
 				counter = 0;
 				phase = SFHSS_DATA1;
-			}
-			
+			}		
 			return 2000;
 		/* Work cycle: 6.8ms */
 #define SFHSS_PACKET_PERIOD	6800
-#define SFHSS_DATA2_TIMING	1625	// Adjust this value between 1600 and 1650 if your RX(s) are not operating properly
+#define SFHSS_DATA2_TIMING	1626	// Adjust this value between 1600 and 1650 if your RX(s) are not operating properly   //1647
 		case SFHSS_DATA1:
 			SFHSS_build_data_packet();
 			SFHSS_send_packet();
@@ -293,10 +292,11 @@ uint16_t ReadSFHSS(void)
 			return (SFHSS_PACKET_PERIOD -2000 -SFHSS_DATA2_TIMING);	// original 2000
 		case SFHSS_TUNE:
 			phase = SFHSS_DATA1;
+			sbus_checkrx();
 			//SFHSS_tune_freq();
 			SFHSS_tune_chan_fast();
-			CC2500_SetPower(CC2500_POWER_15);
-			return 2000;		
+			//CC2500_SetPower(CC2500_POWER_15);
+			return 1845;   //1845		
 	}
 	return 0;
 }

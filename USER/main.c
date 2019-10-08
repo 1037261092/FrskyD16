@@ -49,6 +49,7 @@ int main(void)
 	TIM3_Int_Init(8815,48);    // open timer interrupt 
 	while (1)
 	{
+		
 	}
 }
 

@@ -132,6 +132,7 @@ void SPI_WriteByte(uint8_t data)
 		DELAY();
 		
 	}
+	SPI_MOSI_HIGH;
 }
 
 uint8_t SPI_ReadByte(void)
