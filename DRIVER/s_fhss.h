@@ -31,7 +31,7 @@
 #define CHANNEL_MAX_125	2047	//	125%
 #define CHANNEL_MIN_125	0		//	125%
 
-extern uint16_t FRSKYD16_SendDataBuff[16];
+extern uint16_t Channel_DataBuff[16];
 
 uint16_t initSFHSS(void);
 uint16_t ReadSFHSS(void);

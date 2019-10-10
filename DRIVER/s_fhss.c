@@ -164,7 +164,7 @@ uint16_t initSFHSS()
 // Channel value -125%<->125% is scaled to 16bit value with no limit
 int16_t convert_channel_16b_nolimit(uint8_t num, int16_t min, int16_t max)
 {
-	int32_t val=FRSKYD16_SendDataBuff[num];				// 0<->2047
+	int32_t val=Channel_DataBuff[num];				// 0<->2047
 	val=(val-CHANNEL_MIN_100)*(max-min)/(CHANNEL_MAX_100-CHANNEL_MIN_100)+min;
 	return (uint16_t)val;
 }
@@ -278,7 +278,8 @@ uint16_t ReadSFHSS(void)
 			return 2000;
 		/* Work cycle: 6.8ms */
 #define SFHSS_PACKET_PERIOD	6800
-#define SFHSS_DATA2_TIMING	1626	// Adjust this value between 1600 and 1650 if your RX(s) are not operating properly   //1647
+#define SFHSS_DATA2_TIMING	1647
+			// Adjust this value between 1600 and 1650 if your RX(s) are not operating properly   //1647
 		case SFHSS_DATA1:
 			SFHSS_build_data_packet();
 			SFHSS_send_packet();
