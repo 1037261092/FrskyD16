@@ -37,7 +37,7 @@ typedef enum
 FRSKYD16PhaseTypeDef FRSKYD16Phase = FRSKYD16_DATA ; 
 
 //Channel values are 12-bit values between 988 and 2012, 1500 is the middle.
-uint16_t FRSKYD16_SendDataBuff[16]  = { 1500 , 1500 , 988 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500};
+uint16_t Channel_DataBuff[16]  = { 1500 , 1500 , 988 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500};
 
 //FRSKYD16 Channel order
 const uint8_t  FRSKYD16_CH_Code[16] = {AILERON, ELEVATOR, THROTTLE, RUDDER, AUX1, AUX2, AUX3, AUX4, AUX5, AUX6, AUX7, AUX8, AUX9, AUX10, AUX11, AUX12};
@@ -97,7 +97,7 @@ static uint16_t crc_x(uint8_t *data, uint8_t len)
 static uint16_t  __attribute__((unused)) CalChannelData( uint8_t channel)
 {	
   	if(channel > 15) channel = 15 ;
-  	uint16_t DataTemp = FRSKYD16_SendDataBuff[channel]; 
+  	uint16_t DataTemp = Channel_DataBuff[channel]; 
 	DataTemp = (((DataTemp*15)>>4)+1290) - 1226;
   	if(channel>7)
 		DataTemp |= 2048;
