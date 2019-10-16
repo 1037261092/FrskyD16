@@ -7,6 +7,15 @@
 #define CC2500_NSS_LOW   SPI_NSS_LOW
 #define CC2500_NSS_HIGH  SPI_NSS_HIGH
 
+#define  PA_DISEN   (GPIOA->BRR  = GPIO_Pin_0)
+#define  PA_EN      (GPIOA->BSRR = GPIO_Pin_0)
+
+#define  LNA_DISEN  (GPIOA->BRR  = GPIO_Pin_1)
+#define  LNA_EN     (GPIOA->BSRR = GPIO_Pin_1)
+
+#define  HGM_DISEN   (GPIOA->BRR  = GPIO_Pin_2)
+#define  HGM_EN      (GPIOA->BSRR = GPIO_Pin_2)
+
 enum TXRX_State {
 	TXRX_OFF,
 	TX_EN,

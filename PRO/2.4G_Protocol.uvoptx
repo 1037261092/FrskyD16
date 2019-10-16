@@ -235,6 +235,26 @@
           <WinNumber>1</WinNumber>
           <ItemText>rx_data</ItemText>
         </Ww>
+        <Ww>
+          <count>17</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>CC2500_ReadReg(CC2500_0E_FREQ1)</ItemText>
+        </Ww>
+        <Ww>
+          <count>18</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>x</ItemText>
+        </Ww>
+        <Ww>
+          <count>19</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>Channel_DataBuff</ItemText>
+        </Ww>
+        <Ww>
+          <count>20</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>sbus_checkrx</ItemText>
+        </Ww>
       </WatchWindow1>
       <Tracepoint>
         <THDelay>0</THDelay>

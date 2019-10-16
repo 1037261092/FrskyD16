@@ -85,6 +85,18 @@ static const uint8_t cc2500_conf[FRSKYD16_CONFIG_CNTS][2]=
 	
 };
 
+void CC2592_Init(void)
+{
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA , ENABLE);
+	
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_Level_1;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+}
+
 static void CC2500_WaitingReady()
 {
 	uint16_t cnts = 0;
@@ -183,6 +195,10 @@ void CC2500_WriteData(uint8_t *dpbuffer, uint8_t len)
 
 bool CC2500_Init(void)
 {
+	CC2592_Init();
+	PA_EN;
+	LNA_DISEN;
+	HGM_DISEN;
 	bool CC2500RestError_flag = false;
 	spi_init();
 	if(!CC2500_Reset())

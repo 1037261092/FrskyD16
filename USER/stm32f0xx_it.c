@@ -117,8 +117,8 @@ void TIM3_IRQHandler(void)
 	{
 		TIM_ClearITPendingBit(TIM3,TIM_IT_Update);		
 		TIM3->ARR = ReadFRSKYD16(); 
-		PA1_LOW;
-		PA1_HIGH;
+//		PA1_LOW;
+//		PA1_HIGH;
 		IWDG_ReloadCounter();
 	}
 }
