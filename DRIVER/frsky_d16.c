@@ -4,6 +4,7 @@
 #include "function.h"
 #include <stdlib.h>
 #include "sbus.h"
+#include "adc.h"
 #ifdef LBT
 	#define FRSKYD16_PACKET_LEN  33
 #else
@@ -407,7 +408,10 @@ void initFRSKYD16(void)
 	//Get the frequency hopping by chip ID
 	Calc_FRSKYD16_Channel();
 	
-	srand(SysTick->VAL);
+	adc_init();
+	ADC_StartOfConversion(ADC1);
+	while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC)==RESET);
+	srand(ADC_GetConversionValue(ADC1));     //Gets a random number from the ADC
 	FRSKYD16_ChannelShip = rand() % 46 + 1;  // Initialize it to random 0-47 inclusive
 	while((FRSKYD16_ChannelShip - FRSKYD16_ctr) % 4) 
 	{

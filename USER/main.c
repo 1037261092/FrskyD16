@@ -33,9 +33,12 @@
 #include "timer.h"
 #include "key.h"
 #include "iwdog.h"
+#include "adc.h"
+
+unsigned short adc_data;
 int main(void)
 {
-	delay_init(48);		
+	delay_init(48);
 	initFRSKYD16();
 	sbus_init();
 	key_init();
@@ -43,6 +46,7 @@ int main(void)
 	TIM3_Int_Init(8815,48);    // open timer interrupt 
 	while (1)
 	{
+		
 	}
 }
 

@@ -335,7 +335,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>STM32F030,USE_STDPERIPH_DRIVER,USE_FULL_ASSERT,PLL_SOURCE_HSI</Define>
+              <Define>STM32F030,USE_STDPERIPH_DRIVER,USE_FULL_ASSERT</Define>
               <Undefine></Undefine>
               <IncludePath>..\CORE;..\DRIVER;..\LIB\inc;..\USER;..\HARDWARE;..\FUNCTION</IncludePath>
             </VariousControls>
@@ -405,6 +405,11 @@
               <FileName>timer.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\DRIVER\timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DRIVER\adc.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -520,6 +525,11 @@
               <FileName>stm32f0xx_wwdg.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\LIB\src\stm32f0xx_wwdg.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f0xx_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\LIB\src\stm32f0xx_adc.c</FilePath>
             </File>
           </Files>
         </Group>
