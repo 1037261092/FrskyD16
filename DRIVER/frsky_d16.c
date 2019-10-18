@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include "sbus.h"
 #include "adc.h"
+#include "led.h"
 #ifdef LBT
 	#define FRSKYD16_PACKET_LEN  33
 #else
@@ -366,6 +367,7 @@ uint16_t ReadFRSKYD16(void)
 				CC2500_Strobe(CC2500_SIDLE);
 				CC2500_WriteData(SendPacket, SendPacket[0] + 1);
 				++FRSKYD16_BindCounts ; 
+				Led_On_Off(FRSKYD16_BindCounts & 0x10);
 				
 			}  
 			else
@@ -376,6 +378,7 @@ uint16_t ReadFRSKYD16(void)
 				FRSKYD16_InitDeviceAddr(Bind_flg) ;	
 				CC2500_SetPower(CC2500_POWER_17);				
 				FRSKYD16Phase = FRSKYD16_DATA ; 
+				Led_On_Off(0);
 				
 			}
 			return 8830 ;

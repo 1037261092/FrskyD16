@@ -34,12 +34,14 @@
 #include "key.h"
 #include "iwdog.h"
 #include "adc.h"
+#include "led.h"
 
 unsigned short adc_data;
 int main(void)
 {
 	delay_init(48);
 	initFRSKYD16();
+	led_Init();
 	sbus_init();
 	key_init();
 	WDG_Config();
