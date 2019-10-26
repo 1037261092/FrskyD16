@@ -36,10 +36,33 @@
 #include "adc.h"
 #include "led.h"
 
-unsigned short adc_data;
+#define GPIOA_1_Read()  GPIOA->IDR & GPIO_Pin_1
+uint8_t Version_select_flag;
+
+void GPIOA_Pin_1_Init(void)
+{
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA , ENABLE);
+	
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_Level_1;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+}
+
 int main(void)
 {
 	delay_init(48);
+	GPIOA_Pin_1_Init();
+	if(GPIOA_1_Read())
+	{
+		Version_select_flag = FCC;
+	}
+	else
+	{
+		Version_select_flag = LBT;
+	}
 	initFRSKYD16();
 	led_Init();
 	sbus_init();

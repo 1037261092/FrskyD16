@@ -114,18 +114,8 @@ static uint16_t  __attribute__((unused)) CalChannelData( uint8_t channel)
 static void __attribute__((unused)) FRSKYD16_tune_chan_fast(void)
 {
 	CC2500_Strobe(CC2500_SIDLE);
-//	CC2500_WriteReg(CC2500_0D_FREQ2 , Fre_Carrier_H);
-//	CC2500_WriteReg(CC2500_0E_FREQ1 , Fre_Carrier_M);
-//	CC2500_WriteReg(CC2500_0F_FREQ0 , Fre_Carrier_L);
-//	delay_us(2);
-//	CC2500_Strobe(CC2500_SIDLE);
-//	CC2500_WriteReg(CC2500_0D_FREQ2 , Fre_Carrier_H);
-//	CC2500_WriteReg(CC2500_0E_FREQ1 , Fre_Carrier_M);
-//	CC2500_WriteReg(CC2500_0F_FREQ0 , Fre_Carrier_L);
 	CC2500_WriteReg(CC2500_25_FSCAL1, FRSKYD16_calData[FRSKYD16_Channel_Num]);
 	CC2500_WriteReg(CC2500_0A_CHANNR, FRSKYD16_HOPChannel[FRSKYD16_Channel_Num]);
-	//CC2500_Strobe(CC2500_SCAL);
-	//CC2500_Strobe(CC2500_SRX);
 }
 
 
@@ -143,11 +133,15 @@ static void FRSKYD16_calc_next_chan(void)
 static void __attribute__((unused)) Frsky_D16_build_Bind_packet(void)
 {
 		//固定码
-#ifdef LBT
-	SendPacket[0] = 0x20;
-#else
-	SendPacket[0] = 0x1D;
-#endif
+	if(Version_select_flag == LBT)
+	{
+		SendPacket[0] = 0x20;
+	}
+	else
+	{
+		SendPacket[0] = 0x1D;
+	}
+
 	SendPacket[1] = 0x03;
 	SendPacket[2] = 0x01;
 	//遥控器ID
@@ -180,20 +174,23 @@ static void __attribute__((unused)) Frsky_D16_build_Bind_packet(void)
 	SendPacket[25] 	= 0x00;
 	SendPacket[26] 	= 0x00;
 	SendPacket[27] 	= 0x00;
-#ifdef LBT
-	SendPacket[28] 	= 0x00;
-	SendPacket[29] 	= 0x00;
-	SendPacket[30] 	= 0x00;
-	uint16_t lcrc = crc_x(&SendPacket[3], 28);
-	SendPacket[31] 	= lcrc >> 8;;
-	SendPacket[32] 	= lcrc;
-#else
-	//数据包校验和
-	uint16_t lcrc = crc_x(&SendPacket[3], 25);
-	
-	SendPacket[28] = lcrc >> 8;
-	SendPacket[29] = lcrc;
-#endif
+	if(Version_select_flag == LBT)
+	{
+		SendPacket[28] 	= 0x00;
+		SendPacket[29] 	= 0x00;
+		SendPacket[30] 	= 0x00;
+		uint16_t lcrc = crc_x(&SendPacket[3], 28);
+		SendPacket[31] 	= lcrc >> 8;;
+		SendPacket[32] 	= lcrc;
+	}
+	else
+	{
+		//数据包校验和
+		uint16_t lcrc = crc_x(&SendPacket[3], 25);
+		
+		SendPacket[28] = lcrc >> 8;
+		SendPacket[29] = lcrc;
+	}
 }
 
 /*---------------------------------------------------------------------
@@ -206,11 +203,14 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet()
 	uint16_t chan_1 ; 
 	uint8_t startChan = 0;
 	sbus_checkrx();
-	#ifdef LBT
-	SendPacket[0] = 0x20;
-#else
-	SendPacket[0] = 0x1D;
-#endif
+	if(Version_select_flag == LBT)
+	{
+		SendPacket[0] = 0x20;
+	}
+	else
+	{
+		SendPacket[0] = 0x1D;
+	}
 	//telemetry radio ID
 	SendPacket[1]   = (TransmitterID >> 8) & 0xFF  ;
 	SendPacket[2]   = TransmitterID & 0xFF ;           
@@ -251,23 +251,26 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet()
 	SendPacket[21] = 0x08 ; 
 	//下一包数据 发送 后 8 通
 	lpass += 1 ;
-#ifdef LBT
-	for (uint8_t i=22;i<31;i++)
+	if(Version_select_flag == LBT)
 	{
-		SendPacket[i]=0;
+		for (uint8_t i=22;i<31;i++)
+		{
+			SendPacket[i]=0;
+		}
+		uint16_t lcrc = crc_x(&SendPacket[3], 28);
+		SendPacket[31]=lcrc>>8;   //high byte
+		SendPacket[32]=lcrc;      //low byte
 	}
-	uint16_t lcrc = crc_x(&SendPacket[3], 28);
-	SendPacket[31]=lcrc>>8;   //high byte
-	SendPacket[32]=lcrc;      //low byte
-#else
-	for (uint8_t i=22;i<28;i++)
+	else
 	{
-		SendPacket[i]=0;
+		for (uint8_t i=22;i<28;i++)
+		{
+			SendPacket[i]=0;
+		}
+		uint16_t lcrc = crc_x(&SendPacket[3], 25);
+		SendPacket[28]=lcrc>>8;   //high byte
+		SendPacket[29]=lcrc;      //low byte
 	}
-	uint16_t lcrc = crc_x(&SendPacket[3], 25);
-	SendPacket[28]=lcrc>>8;   //high byte
-	SendPacket[29]=lcrc;      //low byte
-#endif
 }
 
 //==============================================================================
