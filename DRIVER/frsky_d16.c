@@ -379,7 +379,7 @@ uint16_t ReadFRSKYD16(void)
 				FRSKYD16_BindCounts = 0 ; 
 				FRSKYD16_Channel_Num = 0 ; 
 				FRSKYD16_InitDeviceAddr(Bind_flg) ;	
-				CC2500_SetPower(CC2500_POWER_17);				
+				CC2500_SetPower(RF_POWER);
 				FRSKYD16Phase = FRSKYD16_DATA ; 
 				Led_On_Off(0);
 				

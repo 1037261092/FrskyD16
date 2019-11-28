@@ -35,11 +35,12 @@
 #include "iwdog.h"
 #include "adc.h"
 #include "led.h"
-
+#include "stdio.h"
 #define GPIOA_1_Read()  GPIOA->IDR & GPIO_Pin_1
-uint8_t Version_select_flag;
-
-void GPIOA_Pin_1_Init(void)
+#define GPIOA_10_Read() GPIOA->IDR & GPIO_Pin_10
+uint8_t Version_select_flag = 0,Low_power = 1;    //射频默认高功率
+uint8_t RF_POWER;
+void GPIOA_Pin_1_10_Init(void)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure;
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA , ENABLE);
@@ -49,12 +50,16 @@ void GPIOA_Pin_1_Init(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_Level_1;
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
 
 int main(void)
 {
 	delay_init(48);
-	GPIOA_Pin_1_Init();
+	GPIOA_Pin_1_10_Init();
 	if(GPIOA_1_Read())
 	{
 		Version_select_flag = FCC;
@@ -62,6 +67,15 @@ int main(void)
 	else
 	{
 		Version_select_flag = LBT;
+	}
+	
+	if(GPIOA_10_Read())
+	{
+		RF_POWER = CC2500_POWER_15;
+	}
+	else
+	{
+		RF_POWER = CC2500_POWER_1;
 	}
 	initFRSKYD16();
 	led_Init();

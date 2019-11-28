@@ -224,7 +224,7 @@ bool CC2500_Init(void)
 		//CC2500_Strobe(CC2500_SIDLE);
 		delay_us(10);
 		CC2500_SetTxRxMode(TX_EN);
-		CC2500_SetPower(CC2500_POWER_15);
+		CC2500_SetPower(RF_POWER);
 		CC2500_Strobe(CC2500_SIDLE);
 		delay_us(10);
 	}

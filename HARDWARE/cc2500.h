@@ -4,6 +4,8 @@
 #include "stm32f0xx.h"
 #include <stdbool.h>
 
+extern uint8_t RF_POWER;
+
 #define CC2500_NSS_LOW   SPI_NSS_LOW
 #define CC2500_NSS_HIGH  SPI_NSS_HIGH
 
