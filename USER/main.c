@@ -71,7 +71,7 @@ int main(void)
 	
 	if(GPIOA_10_Read())
 	{
-		RF_POWER = CC2500_POWER_15;
+		RF_POWER = CC2500_POWER_17;
 	}
 	else
 	{
