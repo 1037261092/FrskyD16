@@ -116,7 +116,7 @@ void TIM3_IRQHandler(void)
 	if(TIM_GetITStatus(TIM3,TIM_IT_Update) != RESET)
 	{
 		TIM_ClearITPendingBit(TIM3,TIM_IT_Update);		
-		TIM3->ARR = ReadFRSKYD16(); 
+		TIM3->ARR = ReadFRSKYD8(); 
 //		PA1_LOW;
 //		PA1_HIGH;
 		IWDG_ReloadCounter();

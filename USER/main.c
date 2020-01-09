@@ -39,7 +39,7 @@
 #define GPIOA_1_Read()  GPIOA->IDR & GPIO_Pin_1
 #define GPIOA_10_Read() GPIOA->IDR & GPIO_Pin_10
 uint8_t Version_select_flag = 0,Low_power = 1;    //射频默认高功率
-uint8_t RF_POWER;
+uint8_t RF_POWER = CC2500_POWER_17;
 void GPIOA_Pin_1_10_Init(void)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure;
@@ -60,15 +60,15 @@ int main(void)
 {
 	delay_init(48);
 	GPIOA_Pin_1_10_Init();
-	if(GPIOA_10_Read())
-	{
-		RF_POWER = CC2500_POWER_17;
-	}
-	else
-	{
-		RF_POWER = CC2500_POWER_1;
-	}
-	initFRSKYD16();
+//	if(GPIOA_10_Read())
+//	{
+//		RF_POWER = CC2500_POWER_17;
+//	}
+//	else
+//	{
+//		RF_POWER = CC2500_POWER_1;
+//	}
+	initFRSKYD8();
 	led_Init();
 	sbus_init();
 	key_init();

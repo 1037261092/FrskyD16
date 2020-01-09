@@ -202,14 +202,14 @@ void sbus_checkrx(void)
 			Channel_DataBuff[5]  = ((data[7]  >>7 |data[8]<<1   |data[9]<<9)    & 0x07FF);
 			Channel_DataBuff[6]  = ((data[9]  >>2 |data[10]<<6)                 & 0x07FF);
 			Channel_DataBuff[7]  = ((data[10] >>5 |data[11]<<3)                 & 0x07FF);
-			Channel_DataBuff[8]  = ((data[12] |    data[13]<<8)                 & 0x07FF);
-			Channel_DataBuff[9]  = ((data[13] >>3 |data[14]<<5)                 & 0x07FF);
-			Channel_DataBuff[10] = ((data[14] >>6 |data[15]<<2  |data[16]<<10)  & 0x07FF);
-			Channel_DataBuff[11] = ((data[16] >>1 |data[17]<<7)                 & 0x07FF);
-			Channel_DataBuff[12] = ((data[17] >>4 |data[18]<<4)                 & 0x07FF);
-			Channel_DataBuff[13] = ((data[18] >>7 |data[19]<<1  |data[20]<<9)   & 0x07FF);
-			Channel_DataBuff[14] = ((data[20] >>2 |data[21]<<6)                 & 0x07FF);
-			Channel_DataBuff[15] = ((data[21] >>5 |data[22]<<3)                 & 0x07FF);
+//			Channel_DataBuff[8]  = ((data[12] |    data[13]<<8)                 & 0x07FF);
+//			Channel_DataBuff[9]  = ((data[13] >>3 |data[14]<<5)                 & 0x07FF);
+//			Channel_DataBuff[10] = ((data[14] >>6 |data[15]<<2  |data[16]<<10)  & 0x07FF);
+//			Channel_DataBuff[11] = ((data[16] >>1 |data[17]<<7)                 & 0x07FF);
+//			Channel_DataBuff[12] = ((data[17] >>4 |data[18]<<4)                 & 0x07FF);
+//			Channel_DataBuff[13] = ((data[18] >>7 |data[19]<<1  |data[20]<<9)   & 0x07FF);
+//			Channel_DataBuff[14] = ((data[20] >>2 |data[21]<<6)                 & 0x07FF);
+//			Channel_DataBuff[15] = ((data[21] >>5 |data[22]<<3)                 & 0x07FF);
 
 			frame_received = 0;    
 		} // end frame received
