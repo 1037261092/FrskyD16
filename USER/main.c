@@ -28,7 +28,7 @@
 #include "spi.h"
 #include "cc2500.h"
 #include "delay.h"
-#include "frsky_d16.h"
+#include "frsky_d8.h"
 #include "sbus.h"
 #include "timer.h"
 #include "key.h"

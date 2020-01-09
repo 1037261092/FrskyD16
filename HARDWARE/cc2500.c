@@ -1,7 +1,7 @@
 #include "cc2500.h"
 #include "spi.h"
 #include "delay.h"
-#include "frsky_d16.h"
+#include "frsky_d8.h"
 #define FRSKYD8_CONFIG_CNTS  36
 
 static const uint8_t cc2500_conf[FRSKYD8_CONFIG_CNTS][2]=

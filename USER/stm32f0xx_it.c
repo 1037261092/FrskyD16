@@ -30,7 +30,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f0xx_it.h"
 #include "spi.h"
-#include "frsky_d16.h"
+#include "frsky_d8.h"
 /** @addtogroup Template_Project
   * @{
   */

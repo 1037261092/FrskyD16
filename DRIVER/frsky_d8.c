@@ -1,4 +1,4 @@
-#include "frsky_d16.h"
+#include "frsky_d8.h"
 #include "cc2500.h"
 #include "delay.h"
 #include "function.h"
@@ -107,7 +107,7 @@ static uint16_t  __attribute__((unused)) CalChannelData( uint8_t channel)
 uint16_t convert_channel_frsky(uint8_t num)
 {
 	uint16_t val=Channel_DataBuff[num];
-	return ((val*15)>>4)+1290;
+	return ((val*15)>>4)+1321;
 }
 /*--------------------------------------------------------------
 					frequency hopping 
