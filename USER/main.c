@@ -60,15 +60,6 @@ int main(void)
 {
 	delay_init(48);
 	GPIOA_Pin_1_10_Init();
-	if(GPIOA_1_Read())
-	{
-		Version_select_flag = FCC;
-	}
-	else
-	{
-		Version_select_flag = LBT;
-	}
-	
 	if(GPIOA_10_Read())
 	{
 		RF_POWER = CC2500_POWER_17;

@@ -15,9 +15,6 @@
 #define Output_Mid 1500
 #define Output_Min 988
 
-#define LBT 0
-#define FCC 1
-
 extern uint8_t Version_select_flag;
 
 //定义各通道名称(最大支持8通道)

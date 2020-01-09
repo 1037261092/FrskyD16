@@ -211,14 +211,7 @@ bool CC2500_Init(void)
 	{
 		for(uint8_t i=0 ;i < FRSKYD16_CONFIG_CNTS ; ++i)
 		{
-			if(Version_select_flag == FCC)
-			{
-				CC2500_WriteReg(cc2500_conf_FCC[i][0],cc2500_conf_FCC[i][1]);  //FCC
-			}
-			else
-			{
-				CC2500_WriteReg(cc2500_conf_EU[i][0],cc2500_conf_EU[i][1]);    //LBT
-			}
+			CC2500_WriteReg(cc2500_conf_FCC[i][0],cc2500_conf_FCC[i][1]);  //FCC
 			delay_us(20);
 		}
 		//CC2500_Strobe(CC2500_SIDLE);

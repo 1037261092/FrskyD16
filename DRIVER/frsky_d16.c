@@ -6,23 +6,20 @@
 #include "sbus.h"
 #include "adc.h"
 #include "led.h"
-#ifdef LBT
-	#define FRSKYD16_PACKET_LEN  33
-#else
-	#define FRSKYD16_PACKET_LEN  30
-#endif
-#define FRSKYD16_BINDCHANNEL 47 						//The 47th channel is fixed as a bound channel 
+
+#define FRSKYD8_PACKET_LEN  18
+#define FRSKYD8_BINDCHANNEL 47 						//The 47th channel is fixed as a bound channel 
 
 bool     Bind_flg = false ; 
-uint16_t FRSKYD16_BindCounts = 0; 						// 对码数据包发送个数
+uint16_t FRSKYD8_BindCounts = 0; 						// 对码数据包发送个数
 
-uint8_t	 FRSKYD16_ChannelShip = 0;       				// 跳频间隔(前后两次频段间隔)
-uint8_t  FRSKYD16_ctr = 0 ; 							
-uint8_t  FRSKYD16_CountsRst = 0; 						
-uint8_t  FRSKYD16_HOPChannel[50] ; 						// 跳频列表(根据遥控器ID计算出47个跳频号(后三个频点无效))	
-uint8_t  FRSKYD16_calData[50];							// 记录跳频通道频率值
+uint8_t	 FRSKYD8_ChannelShip = 0;       				// 跳频间隔(前后两次频段间隔)
+uint8_t  FRSKYD8_ctr = 0 ; 							
+uint8_t  FRSKYD8_CountsRst = 0; 						
+uint8_t  FRSKYD8_HOPChannel[50] ; 						// 跳频列表(根据遥控器ID计算出47个跳频号(后三个频点无效))	
+uint8_t  FRSKYD8_calData[50];							// 记录跳频通道频率值
 
-uint8_t  FRSKYD16_Channel_Num = 0   ; 					// 跳频通道号
+uint8_t  FRSKYD8_Channel_Num = 0   ; 					// 跳频通道号
 bool CC2500_Error_flg = false ; 
 bool HighThrottle_flg = true ; 							//高油门标志位
 uint16_t TransmitterID ; 							    //遥控器唯一ID
@@ -30,25 +27,25 @@ uint8_t  SendPacket[40] ; 							    //发送数据包缓存 (1) 对码数据包
 
 typedef enum 
 {
-	FRSKYD16_BIND  		    = 0x00 , 
+	FRSKYD8_BIND  		    = 0x00 , 
 	//FRSKYD16_BIND_PASSBACK	= 0x01 , 
-	FRSKYD16_DATA  		    = 0x02 ,	
+	FRSKYD8_DATA  		    = 0x02 ,	
     //FRSKYD16_TUNE  		    = 0x03 ,
-}FRSKYD16PhaseTypeDef ;
+}FRSKYD8PhaseTypeDef ;
 
-FRSKYD16PhaseTypeDef FRSKYD16Phase = FRSKYD16_DATA ; 
+FRSKYD8PhaseTypeDef FRSKYD8Phase = FRSKYD8_DATA ; 
 
 //Channel values are 12-bit values between 988 and 2012, 1500 is the middle.
-uint16_t Channel_DataBuff[16]  = { 1500 , 1500 , 988 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500};
+uint16_t Channel_DataBuff[8]  = { 1500 , 1500 , 988 , 1500 , 1500 , 1500 , 1500 , 1500};
 
 //FRSKYD16 Channel order
-const uint8_t  FRSKYD16_CH_Code[16] = {AILERON, ELEVATOR, THROTTLE, RUDDER, AUX1, AUX2, AUX3, AUX4, AUX5, AUX6, AUX7, AUX8, AUX9, AUX10, AUX11, AUX12};
+const uint8_t  FRSKYD8_CH_Code[8] = {AILERON, ELEVATOR, THROTTLE, RUDDER, AUX1, AUX2, AUX3, AUX4};
 
 
 //==============================================================================
-//			FRSKYD16 初始化器件地址
+//			FRSKYD8 初始化器件地址
 //==============================================================================
-static void __attribute__((unused)) FRSKYD16_InitDeviceAddr(bool IsBindFlg)
+static void __attribute__((unused)) FRSKYD8_InitDeviceAddr(bool IsBindFlg)
 {
 	CC2500_WriteReg(CC2500_0C_FSCTRL0 , 0x00); 
 	CC2500_WriteReg(CC2500_18_MCSM0,    0x08) ;	
@@ -57,14 +54,14 @@ static void __attribute__((unused)) FRSKYD16_InitDeviceAddr(bool IsBindFlg)
 }
 
 //==============================================================================
-//			FRSKYD16 设置发送通道
+//			FRSKYD8 设置发送通道
 //==============================================================================
-static void __attribute__((unused)) FRSKYD16_TuneChannel(uint8_t Channel)
+static void __attribute__((unused)) FRSKYD8_TuneChannel(uint8_t Channel)
 {
-	CC2500_Strobe(CC2500_SIDLE);						//进入闲置状态
-	CC2500_WriteReg(CC2500_25_FSCAL1, FRSKYD16_calData[Channel]);		//设置发送通道
-	CC2500_WriteReg(CC2500_0A_CHANNR, FRSKYD16_HOPChannel[Channel]);	//设置发送通道
-	//CC2500_Strobe(CC2500_SCAL);						//校准频率合成器并关闭
+	CC2500_Strobe(CC2500_SIDLE);						                //进入闲置状态
+	CC2500_WriteReg(CC2500_25_FSCAL1, FRSKYD8_calData[Channel]);		//设置发送通道
+	CC2500_WriteReg(CC2500_0A_CHANNR, FRSKYD8_HOPChannel[Channel]);	    //设置发送通道
+	CC2500_Strobe(CC2500_SCAL);						                    //校准频率合成器并关闭
 	delay_us(20);
 }
 
@@ -114,8 +111,8 @@ static uint16_t  __attribute__((unused)) CalChannelData( uint8_t channel)
 static void __attribute__((unused)) FRSKYD16_tune_chan_fast(void)
 {
 	CC2500_Strobe(CC2500_SIDLE);
-	CC2500_WriteReg(CC2500_25_FSCAL1, FRSKYD16_calData[FRSKYD16_Channel_Num]);
-	CC2500_WriteReg(CC2500_0A_CHANNR, FRSKYD16_HOPChannel[FRSKYD16_Channel_Num]);
+	CC2500_WriteReg(CC2500_25_FSCAL1, FRSKYD8_calData[FRSKYD8_Counts%47]);
+	CC2500_WriteReg(CC2500_0A_CHANNR, FRSKYD8_HOPChannel[FRSKYD8_Counts%47]);
 }
 
 
@@ -124,7 +121,7 @@ static void __attribute__((unused)) FRSKYD16_tune_chan_fast(void)
 --------------------------------------------------------------------------------*/
 static void FRSKYD16_calc_next_chan(void)
 {
-    	FRSKYD16_Channel_Num = (FRSKYD16_Channel_Num + FRSKYD16_ChannelShip) % 47 ;
+    	FRSKYD8_Channel_Num = (FRSKYD8_Channel_Num + FRSKYD8_ChannelShip) % 47 ;
 }
 
 /*--------------------------------------------------------------------------------
@@ -133,28 +130,21 @@ static void FRSKYD16_calc_next_chan(void)
 static void __attribute__((unused)) Frsky_D16_build_Bind_packet(void)
 {
 		//固定码
-	if(Version_select_flag == LBT)
-	{
-		SendPacket[0] = 0x20;
-	}
-	else
-	{
-		SendPacket[0] = 0x1D;
-	}
 
+	SendPacket[0] = 0x20;
 	SendPacket[1] = 0x03;
 	SendPacket[2] = 0x01;
 	//遥控器ID
 	SendPacket[3] = (TransmitterID >> 8) & 0xFF  ;
 	SendPacket[4] = TransmitterID & 0xFF ;
 	
-	uint8_t  idx 	= (FRSKYD16_BindCounts % 10) * 5 ;
+	uint8_t  idx 	= (FRSKYD8_BindCounts % 10) * 5 ;
 	SendPacket[5]   = idx;	
-	SendPacket[6]   = FRSKYD16_HOPChannel[idx++];
-	SendPacket[7]   = FRSKYD16_HOPChannel[idx++];
-	SendPacket[8]   = FRSKYD16_HOPChannel[idx++];
-	SendPacket[9]   = FRSKYD16_HOPChannel[idx++];
-	SendPacket[10]  = FRSKYD16_HOPChannel[idx++];
+	SendPacket[6]   = FRSKYD8_HOPChannel[idx++];
+	SendPacket[7]   = FRSKYD8_HOPChannel[idx++];
+	SendPacket[8]   = FRSKYD8_HOPChannel[idx++];
+	SendPacket[9]   = FRSKYD8_HOPChannel[idx++];
+	SendPacket[10]  = FRSKYD8_HOPChannel[idx++];
 	SendPacket[11]  = 0x02;
 	SendPacket[12]  = 0x01; 
 	
@@ -174,23 +164,12 @@ static void __attribute__((unused)) Frsky_D16_build_Bind_packet(void)
 	SendPacket[25] 	= 0x00;
 	SendPacket[26] 	= 0x00;
 	SendPacket[27] 	= 0x00;
-	if(Version_select_flag == LBT)
-	{
-		SendPacket[28] 	= 0x00;
-		SendPacket[29] 	= 0x00;
-		SendPacket[30] 	= 0x00;
-		uint16_t lcrc = crc_x(&SendPacket[3], 28);
-		SendPacket[31] 	= lcrc >> 8;;
-		SendPacket[32] 	= lcrc;
-	}
-	else
-	{
-		//数据包校验和
-		uint16_t lcrc = crc_x(&SendPacket[3], 25);
-		
-		SendPacket[28] = lcrc >> 8;
-		SendPacket[29] = lcrc;
-	}
+	
+	//数据包校验和
+	uint16_t lcrc = crc_x(&SendPacket[3], 25);
+	
+	SendPacket[28] = lcrc >> 8;
+	SendPacket[29] = lcrc;
 }
 
 /*---------------------------------------------------------------------
@@ -203,27 +182,21 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet()
 	uint16_t chan_1 ; 
 	uint8_t startChan = 0;
 	sbus_checkrx();
-	if(Version_select_flag == LBT)
-	{
-		SendPacket[0] = 0x20;
-	}
-	else
-	{
-		SendPacket[0] = 0x1D;
-	}
+	SendPacket[0] = 0x20;
+
 	//telemetry radio ID
 	SendPacket[1]   = (TransmitterID >> 8) & 0xFF  ;
 	SendPacket[2]   = TransmitterID & 0xFF ;           
 	SendPacket[3] 	= 0x02;
 	
 	//  
-	SendPacket[4] = (FRSKYD16_ctr<<6) + FRSKYD16_Channel_Num; 
-	SendPacket[5] = FRSKYD16_CountsRst;
+	SendPacket[4] = (FRSKYD8_ctr<<6) + FRSKYD8_Channel_Num; 
+	SendPacket[5] = FRSKYD8_CountsRst;
 	SendPacket[6] = 0x01;
 	
 	
-	if(FRSKYD16_Channel_Num == 0x21) 
-	  FRSKYD16_Channel_Num = 0x21 ; 
+	if(FRSKYD8_Channel_Num == 0x21) 
+	  FRSKYD8_Channel_Num = 0x21 ; 
 	//
 	SendPacket[7] = 0;
 	SendPacket[8] = 0;
@@ -251,26 +224,15 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet()
 	SendPacket[21] = 0x08 ; 
 	//下一包数据 发送 后 8 通
 	lpass += 1 ;
-	if(Version_select_flag == LBT)
+	
+	for (uint8_t i=22;i<31;i++)
 	{
-		for (uint8_t i=22;i<31;i++)
-		{
-			SendPacket[i]=0;
-		}
-		uint16_t lcrc = crc_x(&SendPacket[3], 28);
-		SendPacket[31]=lcrc>>8;   //high byte
-		SendPacket[32]=lcrc;      //low byte
+		SendPacket[i]=0;
 	}
-	else
-	{
-		for (uint8_t i=22;i<28;i++)
-		{
-			SendPacket[i]=0;
-		}
-		uint16_t lcrc = crc_x(&SendPacket[3], 25);
-		SendPacket[28]=lcrc>>8;   //high byte
-		SendPacket[29]=lcrc;      //low byte
-	}
+	uint16_t lcrc = crc_x(&SendPacket[3], 28);
+	SendPacket[31]=lcrc>>8;   //high byte
+	SendPacket[32]=lcrc;      //low byte
+	
 }
 
 //==============================================================================
@@ -293,15 +255,15 @@ void Calc_FRSKYD16_Channel()
 		uint8_t next_ch = ((id_tmp >> 8) % 0x4B) + 1;			    // Use least-significant byte and must be larger than 1
 		for (i = 0; i < idx; i++)
 		{
-			if(FRSKYD16_HOPChannel[i] == next_ch)    	
+			if(FRSKYD8_HOPChannel[i] == next_ch)    	
 			{
 				break;
 			}
-			if(FRSKYD16_HOPChannel[i] < 27) 		
+			if(FRSKYD8_HOPChannel[i] < 27) 		
 			{
 				count_1_26++;
 			}
-			else if(FRSKYD16_HOPChannel[i] < 53)  		
+			else if(FRSKYD8_HOPChannel[i] < 53)  		
 			{
 				count_27_52++;
 			}
@@ -318,13 +280,13 @@ void Calc_FRSKYD16_Channel()
 		if(idx)
 		{
 			uint8_t Temp = 0 ; 
-			if(next_ch > FRSKYD16_HOPChannel[idx - 1]) 	
+			if(next_ch > FRSKYD8_HOPChannel[idx - 1]) 	
 			{
-				Temp = next_ch - FRSKYD16_HOPChannel[idx - 1] ;
+				Temp = next_ch - FRSKYD8_HOPChannel[idx - 1] ;
 			}				
 			else 						
 			{
-				Temp = FRSKYD16_HOPChannel[idx - 1] - next_ch ;
+				Temp = FRSKYD8_HOPChannel[idx - 1] - next_ch ;
 			}				
 		  	if(Temp < 5)
 			{
@@ -337,11 +299,11 @@ void Calc_FRSKYD16_Channel()
 		//get frequency point
 		if (((next_ch < 27) && (count_1_26 < 16)) || ((next_ch >= 27) && (next_ch < 53) && (count_27_52 < 15)) || ((next_ch >= 53) && (count_53_76 < 16)))
 		{
-			FRSKYD16_HOPChannel[idx++] = next_ch;
+			FRSKYD8_HOPChannel[idx++] = next_ch;
 		}
 	}
 	
-	FRSKYD16_HOPChannel[FRSKYD16_BINDCHANNEL] = 0 ;                  //Band band binding is 0
+	FRSKYD8_HOPChannel[FRSKYD8_BindCounts] = 0 ;                  //Band band binding is 0
 }
 
 
@@ -356,42 +318,42 @@ uint16_t ReadFRSKYD16(void)
 	
 	}
 	
-	switch(FRSKYD16Phase)
+	switch(FRSKYD8Phase)
 	{
 		//send bind data
-		case FRSKYD16_BIND : 
-		  	if(FRSKYD16_BindCounts < 1200)
+		case FRSKYD8_BIND : 
+		  	if(FRSKYD8_BindCounts < 1200)
 			{
-				FRSKYD16_TuneChannel(FRSKYD16_BINDCHANNEL) ; 
+				FRSKYD8_TuneChannel(FRSKYD8_BINDCHANNEL) ; 
 				CC2500_SetPower(CC2500_POWER_1);
 				CC2500_Strobe(CC2500_SFRX);
 				Frsky_D16_build_Bind_packet();
 				delay_us(19);
 				CC2500_Strobe(CC2500_SIDLE);
 				CC2500_WriteData(SendPacket, SendPacket[0] + 1);
-				++FRSKYD16_BindCounts ; 
-				Led_On_Off(FRSKYD16_BindCounts & 0x10);
+				++FRSKYD8_BindCounts ; 
+				Led_On_Off(FRSKYD8_BindCounts & 0x10);
 				
 			}  
 			else
 			{
 			  	Bind_flg = false ; 
-				FRSKYD16_BindCounts = 0 ; 
-				FRSKYD16_Channel_Num = 0 ; 
-				FRSKYD16_InitDeviceAddr(Bind_flg) ;	
+				FRSKYD8_BindCounts = 0 ; 
+				FRSKYD8_Channel_Num = 0 ; 
+				FRSKYD8_InitDeviceAddr(Bind_flg) ;	
 				CC2500_SetPower(RF_POWER);
-				FRSKYD16Phase = FRSKYD16_DATA ; 
+				FRSKYD8Phase = FRSKYD8_DATA ; 
 				Led_On_Off(0);
 				
 			}
 			return 8830 ;
 		// Frsky D16 data
-		case FRSKYD16_DATA :
+		case FRSKYD8_DATA :
 		  	FRSKYD16_calc_next_chan();
 			FRSKYD16_tune_chan_fast();
 			FRSKYD16_build_Data_packet();
 			CC2500_Strobe(CC2500_SIDLE);	
-			CC2500_WriteData(SendPacket, FRSKYD16_PACKET_LEN);
+			CC2500_WriteData(SendPacket, FRSKYD8_PACKET_LEN);
 			return 8830 ;  
 	  
 	}
@@ -400,9 +362,9 @@ uint16_t ReadFRSKYD16(void)
 
 void SetBind(void)
 {
-  	FRSKYD16_BindCounts = 0 ; 
-	FRSKYD16Phase = FRSKYD16_BIND ;
-	FRSKYD16_TuneChannel(FRSKYD16_HOPChannel[FRSKYD16_BINDCHANNEL]) ; 
+  	FRSKYD8_BindCounts = 0 ; 
+	FRSKYD8Phase = FRSKYD8_BIND ;
+	FRSKYD8_TuneChannel(FRSKYD8_HOPChannel[FRSKYD8_BINDCHANNEL]) ; 
 }
 
 
@@ -418,12 +380,12 @@ void initFRSKYD16(void)
 	ADC_StartOfConversion(ADC1);
 	while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC)==RESET);
 	srand(ADC_GetConversionValue(ADC1));     //Gets a random number from the ADC
-	FRSKYD16_ChannelShip = rand() % 46 + 1;  // Initialize it to random 0-47 inclusive
-	while((FRSKYD16_ChannelShip - FRSKYD16_ctr) % 4) 
+	FRSKYD8_ChannelShip = rand() % 46 + 1;  // Initialize it to random 0-47 inclusive
+	while((FRSKYD8_ChannelShip - FRSKYD8_ctr) % 4) 
 	{
-		FRSKYD16_ctr = (FRSKYD16_ctr + 1) % 4 ;
+		FRSKYD8_ctr = (FRSKYD8_ctr + 1) % 4 ;
 	}
-	FRSKYD16_CountsRst = (FRSKYD16_ChannelShip - FRSKYD16_ctr) >> 2 ; 
+	FRSKYD8_CountsRst = (FRSKYD8_ChannelShip - FRSKYD8_ctr) >> 2 ; 
 	
 	CC2500_Error_flg = CC2500_Init() ; 
 	if(CC2500_Error_flg == true)
@@ -436,13 +398,13 @@ void initFRSKYD16(void)
 		for (uint8_t i = 0 ; i < 48 ; i++)
 		{
 			CC2500_Strobe(CC2500_SIDLE);
-			CC2500_WriteReg(CC2500_0A_CHANNR , FRSKYD16_HOPChannel[i]);
+			CC2500_WriteReg(CC2500_0A_CHANNR , FRSKYD8_HOPChannel[i]);
 			CC2500_Strobe(CC2500_SCAL);
 			delay_ms(1);
-			FRSKYD16_calData[i]  =  CC2500_ReadReg(CC2500_25_FSCAL1);
+			FRSKYD8_calData[i]  =  CC2500_ReadReg(CC2500_25_FSCAL1);
 		}
 			
-		FRSKYD16Phase = FRSKYD16_DATA ;
-		FRSKYD16_TuneChannel(FRSKYD16_HOPChannel[FRSKYD16_Channel_Num]) ; 
+		FRSKYD8Phase = FRSKYD8_DATA ;
+		FRSKYD8_TuneChannel(FRSKYD8_HOPChannel[FRSKYD8_Channel_Num]) ; 
 	}
 }
