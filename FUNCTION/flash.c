@@ -64,7 +64,8 @@ uint8_t Flash_WriteDatas(uint32_t Addr,uint16_t *Buffer, uint16_t Length)
 {
 	uint8_t R = 0;
 	uint16_t *FlashAddr = (uint16_t *)Addr;
-	Flash_LockControl(0);                      
+	Flash_LockControl(0);  
+    FLASH_ErasePage(Addr);	
 	while(Length--){
 		FLASH->CR |= FLASH_CR_PG;
 		*FlashAddr++ = *Buffer++;              

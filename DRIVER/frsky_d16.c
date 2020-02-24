@@ -360,7 +360,7 @@ uint16_t ReadFRSKYD16(void)
 	{
 		//send bind data
 		case FRSKYD16_BIND : 
-		  	if(FRSKYD16_BindCounts < 1200)
+		  	if(FRSKYD16_BindCounts < 600)
 			{
 				FRSKYD16_TuneChannel(FRSKYD16_BINDCHANNEL) ; 
 				CC2500_SetPower(CC2500_POWER_1);

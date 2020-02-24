@@ -36,10 +36,13 @@
 #include "adc.h"
 #include "led.h"
 #include "stdio.h"
+#include "flash.h"
 #define GPIOA_1_Read()  GPIOA->IDR & GPIO_Pin_1
 #define GPIOA_10_Read() GPIOA->IDR & GPIO_Pin_10
+#define FLASH_ADDR 0x08007C00 
 uint8_t Version_select_flag = 0,Low_power = 1;    //射频默认高功率
 uint8_t RF_POWER;
+uint16_t protocol_Index;
 void GPIOA_Pin_1_10_Init(void)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure;
@@ -59,15 +62,33 @@ void GPIOA_Pin_1_10_Init(void)
 int main(void)
 {
 	delay_init(48);
+	key_init();
+	led_Init();
 	GPIOA_Pin_1_10_Init();
-	if(GPIOA_1_Read())
+	if(GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_1))
 	{
-		Version_select_flag = FCC;
+		FLASH_ReadDatas(FLASH_ADDR,&protocol_Index,1);
 	}
 	else
 	{
-		Version_select_flag = LBT;
+		FLASH_ReadDatas(FLASH_ADDR,&protocol_Index,1);
+		protocol_Index = protocol_Index + 1;
+		if(protocol_Index >= 2)
+		{
+			protocol_Index = 0;
+		}
+		Flash_WriteDatas(FLASH_ADDR,&protocol_Index,1);
 	}
+	for(uint8_t a=0; a<=protocol_Index; a++)
+	{
+		LED_ON;
+		delay_ms(500);
+		LED_OFF;
+		delay_ms(500);
+	}
+	
+	Version_select_flag = protocol_Index;
+
 	
 	if(GPIOA_10_Read())
 	{
@@ -78,7 +99,6 @@ int main(void)
 		RF_POWER = CC2500_POWER_1;
 	}
 	initFRSKYD16();
-	led_Init();
 	sbus_init();
 	key_init();
 	WDG_Config();
