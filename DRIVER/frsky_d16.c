@@ -6,6 +6,8 @@
 #include "sbus.h"
 #include "adc.h"
 #include "led.h"
+#include "main.h"
+
 #ifdef LBT
 	#define FRSKYD16_PACKET_LEN  33
 #else
@@ -23,7 +25,7 @@ uint8_t  FRSKYD16_HOPChannel[50] ; 						// 跳频列表(根据遥控器ID计算
 uint8_t  FRSKYD16_calData[50];							// 记录跳频通道频率值
 
 uint8_t  FRSKYD16_Channel_Num = 0   ; 					// 跳频通道号
-bool CC2500_Error_flg = false ; 
+
 bool HighThrottle_flg = true ; 							//高油门标志位
 uint16_t TransmitterID ; 							    //遥控器唯一ID
 uint8_t  SendPacket[40] ; 							    //发送数据包缓存 (1) 对码数据包14Byte   (2)发送遥控数据包 28Byte(8 + 16CH*2 = 40)
@@ -37,9 +39,6 @@ typedef enum
 }FRSKYD16PhaseTypeDef ;
 
 FRSKYD16PhaseTypeDef FRSKYD16Phase = FRSKYD16_DATA ; 
-
-//Channel values are 12-bit values between 988 and 2012, 1500 is the middle.
-uint16_t Channel_DataBuff[16]  = { 1500 , 1500 , 988 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500};
 
 //FRSKYD16 Channel order
 const uint8_t  FRSKYD16_CH_Code[16] = {AILERON, ELEVATOR, THROTTLE, RUDDER, AUX1, AUX2, AUX3, AUX4, AUX5, AUX6, AUX7, AUX8, AUX9, AUX10, AUX11, AUX12};

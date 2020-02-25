@@ -412,6 +412,11 @@
               <FileType>1</FileType>
               <FilePath>..\DRIVER\adc.c</FilePath>
             </File>
+            <File>
+              <FileName>frsky_d8.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DRIVER\frsky_d8.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

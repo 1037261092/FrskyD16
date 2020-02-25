@@ -2,9 +2,52 @@
 #include "spi.h"
 #include "delay.h"
 #include "frsky_d16.h"
-#define FRSKYD16_CONFIG_CNTS  36
+#define CC2500_CONFIG_CNTS  36
 
-static const uint8_t cc2500_conf_EU[FRSKYD16_CONFIG_CNTS][2]=
+uint8_t (*cc2500_config)[2];
+bool CC2500_Error_flg = false ; 
+
+static uint8_t cc2500_conf_D8[CC2500_CONFIG_CNTS][2]=
+{
+	{ CC2500_02_IOCFG0   , 0x06 },	
+	{ CC2500_00_IOCFG2   , 0x06 },	
+	{ CC2500_17_MCSM1    , 0x0c },  
+	{ CC2500_18_MCSM0    , 0x18 },  
+	{ CC2500_06_PKTLEN   , 0x19 },  
+	{ CC2500_07_PKTCTRL1 , 0x05 },  
+	{ CC2500_08_PKTCTRL0 , 0x05 },  
+	{ CC2500_3E_PATABLE  , 0xff }, 
+	{ CC2500_0B_FSCTRL1  , 0x08 }, 
+	{ CC2500_0C_FSCTRL0  , 0x00 },
+	{ CC2500_0D_FREQ2    , 0x5c },	       
+	{ CC2500_0E_FREQ1    , 0x76 },
+	{ CC2500_0F_FREQ0    , 0x27 },
+	{ CC2500_10_MDMCFG4  , 0xAA },
+	{ CC2500_11_MDMCFG3  , 0x39 },  
+	{ CC2500_12_MDMCFG2  , 0x11 },  
+	{ CC2500_13_MDMCFG1  , 0x23 },  
+	{ CC2500_14_MDMCFG0  , 0x7a }, 
+	{ CC2500_15_DEVIATN  , 0x42 }, 
+	{ CC2500_1B_AGCCTRL2 , 0x03 },	
+	{ CC2500_19_FOCCFG   , 0x16 }, 
+	{ CC2500_1A_BSCFG    , 0x6c },	
+	{ CC2500_1C_AGCCTRL1 , 0x40 }, 
+	{ CC2500_1D_AGCCTRL0 , 0x91 },  
+	{ CC2500_21_FREND1   , 0x56 },
+	{ CC2500_22_FREND0   , 0x10 },
+	{ CC2500_23_FSCAL3   , 0xa9 },
+	{ CC2500_24_FSCAL2   , 0x0A },
+	{ CC2500_25_FSCAL1   , 0x00 },
+	{ CC2500_26_FSCAL0   , 0x11 },
+	{ CC2500_29_FSTEST   , 0x59 },
+	{ CC2500_2C_TEST2    , 0x88 },
+	{ CC2500_2D_TEST1    , 0x31 },
+	{ CC2500_2E_TEST0    , 0x0B },
+	{ CC2500_03_FIFOTHR  , 0x07 },
+	{ CC2500_09_ADDR     , 0x00 }
+};
+
+static uint8_t cc2500_conf_EU[CC2500_CONFIG_CNTS][2]=
 {
 	{ CC2500_02_IOCFG0   , 0x06 },	
 	{ CC2500_00_IOCFG2   , 0x06 },	
@@ -45,7 +88,7 @@ static const uint8_t cc2500_conf_EU[FRSKYD16_CONFIG_CNTS][2]=
 	
 };
 
-static const uint8_t cc2500_conf_FCC[FRSKYD16_CONFIG_CNTS][2]=
+static uint8_t cc2500_conf_FCC[CC2500_CONFIG_CNTS][2]=
 {
 	{ CC2500_02_IOCFG0   , 0x06 },	
 	{ CC2500_00_IOCFG2   , 0x06 },	
@@ -207,18 +250,23 @@ bool CC2500_Init(void)
 		CC2500RestError_flag = true;	
 	}
 	delay_ms(1);
+	switch(Version_select_flag)
+	{
+		case 0: cc2500_config = cc2500_conf_EU;
+				break;
+		case 1: cc2500_config = cc2500_conf_FCC;
+				break;
+		case 2: cc2500_config = cc2500_conf_D8;
+				break;
+		default:
+				break;
+	}
 	if(!CC2500RestError_flag)
 	{
-		for(uint8_t i=0 ;i < FRSKYD16_CONFIG_CNTS ; ++i)
+		for(uint8_t i=0 ;i < CC2500_CONFIG_CNTS ; ++i)
 		{
-			if(Version_select_flag == FCC)
-			{
-				CC2500_WriteReg(cc2500_conf_FCC[i][0],cc2500_conf_FCC[i][1]);  //FCC
-			}
-			else
-			{
-				CC2500_WriteReg(cc2500_conf_EU[i][0],cc2500_conf_EU[i][1]);    //LBT
-			}
+			
+			CC2500_WriteReg(cc2500_config[i][0],cc2500_config[i][1]);  //FCC
 			delay_us(20);
 		}
 		//CC2500_Strobe(CC2500_SIDLE);

@@ -168,6 +168,7 @@ enum CC2500_POWER
 #define CC2500_STATE_RX_OVERFLOW               0x60
 #define CC2500_STATE_TX_UNDERFLOW              0x70
 
+extern bool CC2500_Error_flg; 
 
 bool CC2500_Init(void);
 void CC2500_SetPower(uint8_t power);

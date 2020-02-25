@@ -29,6 +29,7 @@
 #include "cc2500.h"
 #include "delay.h"
 #include "frsky_d16.h"
+#include "frsky_d8.h"
 #include "sbus.h"
 #include "timer.h"
 #include "key.h"
@@ -77,7 +78,7 @@ int main(void)
 	{
 		FLASH_ReadDatas(FLASH_ADDR,&protocol_Index,1);
 		protocol_Index = protocol_Index + 1;
-		if(protocol_Index >= 2)
+		if(protocol_Index >= 3)
 		{
 			protocol_Index = 0;
 		}
@@ -90,9 +91,21 @@ int main(void)
 		LED_OFF;
 		delay_ms(500);
 	}
-	
 	Version_select_flag = protocol_Index;
-
+	switch(Version_select_flag)
+	{
+		case 0: RF_Init = initFRSKYD16;
+				RF_Process = ReadFRSKYD16;
+				break;
+		case 1: RF_Init = initFRSKYD16;
+				RF_Process = ReadFRSKYD16;
+				break;
+		case 2: RF_Init = initFRSKYD8;
+				RF_Process = ReadFRSKYD8;
+				break;
+		default:
+				break;
+	}
 	
 	if(GPIOA_10_Read())
 	{
@@ -102,8 +115,6 @@ int main(void)
 	{
 		RF_POWER = CC2500_POWER_1;
 	}
-	RF_Init = initFRSKYD16;
-	RF_Process = ReadFRSKYD16;
 	RF_Init();
 	sbus_init();
 	key_init();

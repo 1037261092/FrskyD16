@@ -1,6 +1,10 @@
 #include "sbus.h"
 
 #define RX_BUFF_SIZE 64							//SPEK_FRAME_SIZE 16  
+
+//Channel values are 12-bit values between 988 and 2012, 1500 is the middle.
+uint16_t Channel_DataBuff[16]  = { 1500 , 1500 , 988 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500 , 1500};
+
 uint8_t rx_buffer[RX_BUFF_SIZE];    //spekFrame[SPEK_FRAME_SIZE]
 uint8_t rx_start = 0;
 uint8_t rx_end = 0;

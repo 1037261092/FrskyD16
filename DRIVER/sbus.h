@@ -11,6 +11,8 @@
 #define SERIAL_RX_SOURCE GPIO_PinSource3
 #define SERIAL_RX_CHANNEL GPIO_AF_1
 
+extern uint16_t Channel_DataBuff[16];
+
 void sbus_init(void);
 void sbus_checkrx(void);
 #endif
