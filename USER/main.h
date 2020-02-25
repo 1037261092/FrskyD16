@@ -46,6 +46,8 @@
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
+extern void (*RF_Init)(void);
+extern uint16_t (*RF_Process)(void);
 
 #endif /* __MAIN_H */
 

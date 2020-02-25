@@ -43,6 +43,10 @@
 uint8_t Version_select_flag = 0,Low_power = 1;    //射频默认高功率
 uint8_t RF_POWER;
 uint16_t protocol_Index;
+
+void (*RF_Init)(void);
+uint16_t (*RF_Process)(void);
+
 void GPIOA_Pin_1_10_Init(void)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure;
@@ -98,7 +102,9 @@ int main(void)
 	{
 		RF_POWER = CC2500_POWER_1;
 	}
-	initFRSKYD16();
+	RF_Init = initFRSKYD16;
+	RF_Process = ReadFRSKYD16;
+	RF_Init();
 	sbus_init();
 	key_init();
 	WDG_Config();
