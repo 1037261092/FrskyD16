@@ -15,8 +15,8 @@
 #define Output_Mid 1500
 #define Output_Min 988
 
-#define LBT 0
-#define FCC 1
+#define LBT 1
+#define FCC 0
 
 extern uint8_t Version_select_flag;
 

@@ -252,9 +252,9 @@ bool CC2500_Init(void)
 	delay_ms(1);
 	switch(Version_select_flag)
 	{
-		case 0: cc2500_config = cc2500_conf_EU;
+		case 0: cc2500_config = cc2500_conf_FCC;
 				break;
-		case 1: cc2500_config = cc2500_conf_FCC;
+		case 1: cc2500_config = cc2500_conf_EU;
 				break;
 		case 2: cc2500_config = cc2500_conf_D8;
 				break;

@@ -41,7 +41,7 @@
 #define GPIOA_1_Read()  GPIOA->IDR & GPIO_Pin_1
 #define GPIOA_10_Read() GPIOA->IDR & GPIO_Pin_10
 #define FLASH_ADDR 0x08007C00 
-uint8_t Version_select_flag = 0,Low_power = 1;    //射频默认高功率
+uint8_t Version_select_flag = 0,Low_power = 1;    
 uint8_t RF_POWER;
 uint16_t protocol_Index;
 
@@ -73,6 +73,11 @@ int main(void)
 	if(GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_1))
 	{
 		FLASH_ReadDatas(FLASH_ADDR,&protocol_Index,1);
+		if(protocol_Index >= 3)
+		{
+			protocol_Index = 0;
+		}
+		Flash_WriteDatas(FLASH_ADDR,&protocol_Index,1);
 	}
 	else
 	{

@@ -11,15 +11,15 @@
 #define FRSKYD8_BINDCHANNEL 47 						//The 47th channel is fixed as a bound channel 
 
 bool     D8_Bind_flg = false ; 
-uint16_t FRSKYD8_BindCounts = 0; 						// 对码数据包发送个数
+uint16_t FRSKYD8_BindCounts = 0; 						
 uint8_t  FRSKYD8_Counts = 0;
-uint8_t	 FRSKYD8_ChannelShip = 0;       				// 跳频间隔(前后两次频段间隔)
+uint8_t	 FRSKYD8_ChannelShip = 0;       				
 uint8_t  FRSKYD8_ctr = 0 ; 							
 uint8_t  FRSKYD8_CountsRst = 0; 						
-uint8_t  FRSKYD8_HOPChannel[50] ; 						// 跳频列表(根据遥控器ID计算出47个跳频号(后三个频点无效))	
-uint8_t  FRSKYD8_calData[50];							// 记录跳频通道频率值
-uint8_t  FRSKYD8_Channel_Num = 0   ; 					// 跳频通道号
-uint8_t  D8_SendPacket[18] ; 							    //发送数据包缓存 (1) 对码数据包14Byte   (2)发送遥控数据包 28Byte(8 + 16CH*2 = 40)
+uint8_t  FRSKYD8_HOPChannel[50] ; 						
+uint8_t  FRSKYD8_calData[50];							
+uint8_t  FRSKYD8_Channel_Num = 0   ; 					
+uint8_t  D8_SendPacket[18] ; 							    
 
 typedef enum 
 {
