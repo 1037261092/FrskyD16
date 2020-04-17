@@ -15,4 +15,13 @@ extern uint16_t Channel_DataBuff[16];
 
 void sbus_init(void);
 void sbus_checkrx(void);
+#define DMARx
+
+#ifdef  DMARx
+#define SbusLength              25
+#define RC_DMA_Rx_RCC           RCC_AHBPeriph_DMA1
+#define RC_DMA_Rx_Ch 			DMA1_Channel3
+#define RC_Dma_RxFlagTC			DMA1_FLAG_TC3
+#endif
+
 #endif
