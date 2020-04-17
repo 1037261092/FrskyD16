@@ -35,6 +35,7 @@ int stat_frames_accepted = 0;
 int stat_frames_second;
 int stat_overflow;
 uint8_t data[25];
+uint8_t SbusDataRx[25];
 
 int failsafe = 0;
 int rxmode = 0;
@@ -44,6 +45,7 @@ extern uint16_t Channel_DataBuff[];
 void sbus_init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
+    NVIC_InitTypeDef NVIC_InitStructure;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
@@ -58,11 +60,43 @@ void sbus_init(void)
     USART_InitTypeDef USART_InitStructure;
 
     USART_InitStructure.USART_BaudRate = SERIAL_BAUDRATE;
-    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+    USART_InitStructure.USART_WordLength = USART_WordLength_9b;
     USART_InitStructure.USART_StopBits = USART_StopBits_2;
     USART_InitStructure.USART_Parity = USART_Parity_No;
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_InitStructure.USART_Mode = USART_Mode_Rx ;//USART_Mode_Rx | USART_Mode_Tx;
+#ifdef  DMARx
+	if(SBUS_INVERT) 
+	{
+		USART_InvPinCmd(USART1, USART_InvPin_Rx , ENABLE );
+	}
+    DMA_InitTypeDef DMA_InitStructure; 
+	USART_ITConfig(USART1, USART_IT_IDLE, ENABLE);//ENABLE IDLE interrupt
+    USART_Init(USART1, &USART_InitStructure);
+	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPriority = 0;		
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;		
+	NVIC_Init(&NVIC_InitStructure);	
+	
+	USART_DMACmd(USART1,USART_DMAReq_Rx,ENABLE);
+    USART_Cmd(USART1, ENABLE);
+    RCC_AHBPeriphClockCmd(RC_DMA_Rx_RCC,ENABLE);                       
+	DMA_DeInit(RC_DMA_Rx_Ch);  
+    DMA_InitStructure.DMA_PeripheralBaseAddr =  (uint32_t)(&USART1->RDR);         
+    DMA_InitStructure.DMA_MemoryBaseAddr     =  (uint32_t) SbusDataRx;            
+    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;                     
+    DMA_InitStructure.DMA_BufferSize = SbusLength;                                
+    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;       
+    DMA_InitStructure.DMA_MemoryInc =DMA_MemoryInc_Enable;                  
+    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte; 
+    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;        
+    DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;                       
+    DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;                    
+    DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;                           
+    DMA_Init(RC_DMA_Rx_Ch,&DMA_InitStructure);   
+	DMA_ClearFlag(RC_Dma_RxFlagTC);
+	DMA_Cmd(RC_DMA_Rx_Ch,ENABLE);   
+#else
 
     USART_Init(USART1, &USART_InitStructure);
 	
@@ -75,7 +109,7 @@ void sbus_init(void)
 
     USART_Cmd(USART1, ENABLE);
 
-    NVIC_InitTypeDef NVIC_InitStructure;
+    
 
     NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPriority = 0;
@@ -83,10 +117,61 @@ void sbus_init(void)
     NVIC_Init(&NVIC_InitStructure);
 	
 	framestarted = 0;
+#endif
+    
 }
-
+uint16_t DMA_Residual_length=0; 
+uint32_t ErrorRX=0; 
+uint32_t OkRX=0; 
+uint64_t IDLEIQ=0;
 void USART1_IRQHandler(void)
 {
+#ifdef  DMARx
+    uint8_t RxTemp;
+	if(USART_GetITStatus(USART1,USART_IT_IDLE)!=RESET)
+	{
+        IDLEIQ++;
+		USART_ClearITPendingBit(USART1,USART_IT_IDLE);//Clear USART_IT_IDLE
+		RxTemp=USART1->ISR;			// Clear USART1->ISR
+		RxTemp=USART1->RDR;			// Clear USART2->DR
+		
+		DMA_ClearFlag(RC_Dma_RxFlagTC);		// Clear DMA1_FLAG_TC3
+		DMA_Residual_length=DMA_GetCurrDataCounter(RC_DMA_Rx_Ch);//Get the residual length
+		if((DMA_Residual_length==SbusLength) && (SbusDataRx[0] == 0x0f && SbusDataRx[24]==0x00))// Invalid frame,Set Curr Data Counter SbusLength
+		{
+            OkRX++;
+            Channel_DataBuff[0]  = ((SbusDataRx[2]  & 0x07)<<8) | (SbusDataRx[1] & 0x7ff);                                    //3+8
+            Channel_DataBuff[1]  = ((SbusDataRx[3]  & 0x3f)<<5) | ((SbusDataRx[2] >>3) & 0x1F);                               //6+5
+            Channel_DataBuff[2]  = (((SbusDataRx[5]  & 0x01)<<10)| (SbusDataRx[4] <<2) | (SbusDataRx[3]>>6) ) & 0x7ff;        //1+8+2
+            Channel_DataBuff[3]  = (((SbusDataRx[6]  & 0x0f)<<7) | (SbusDataRx[5] >>1)  ) & 0x7ff;                            //4+7
+            Channel_DataBuff[4]  = (((SbusDataRx[7]  & 0x7f)<<4) | (SbusDataRx[6] >>4)  ) & 0x7ff;                            //7+4
+            Channel_DataBuff[5]  = (((SbusDataRx[9]  & 0x03)<<9) | (SbusDataRx[8] <<1)  | (SbusDataRx[7]>>7) ) & 0x7ff;       //2+8+1
+            Channel_DataBuff[6]  = (((SbusDataRx[10] & 0x1f)<<6) | (SbusDataRx[9] >>2)  ) & 0x7ff;                            //5+6
+            Channel_DataBuff[7]  = ((SbusDataRx[11]<<3) | (SbusDataRx[10]>>5)) & 0x7ff;                                       //8+3 
+            Channel_DataBuff[8]  = (((SbusDataRx[13] & 0x07)<<8) | SbusDataRx[12]) & 0x7ff;                                   //3+8
+            Channel_DataBuff[9]  = (((SbusDataRx[14] & 0x3f)<<5) | (SbusDataRx[13] >>3) ) & 0x7ff;                            //6+5
+            Channel_DataBuff[10] = (((SbusDataRx[16] & 0x01)<<10)| (SbusDataRx[15] <<2) | (SbusDataRx[14]>>6) )& 0x7ff;       //1+8+2
+            Channel_DataBuff[11] = (((SbusDataRx[17] & 0x0f)<<7) | (SbusDataRx[16] >>1) ) & 0x7ff;                            //4+7
+            Channel_DataBuff[12] = (((SbusDataRx[18] & 0x7f)<<4) | (SbusDataRx[17] >>4) ) & 0x7ff;                            //7+4
+            Channel_DataBuff[13] = (((SbusDataRx[20] & 0x03)<<9) | (SbusDataRx[19] <<1) | (SbusDataRx[18]>>7)) & 0x7ff;       //2+8+1
+            Channel_DataBuff[14] = (((SbusDataRx[21] & 0x1f)<<6) | (SbusDataRx[20] >>2) ) & 0x7ff;                            //5+6      
+            Channel_DataBuff[15] = ((SbusDataRx[22]<<3) | (SbusDataRx[21]>>5)) & 0x7ff;    								   //8+3
+
+			frame_received = 0; 
+
+		}
+		else
+		{
+            DMA_Cmd(RC_DMA_Rx_Ch,DISABLE);		// off DMA1_Channel3
+            DMA_SetCurrDataCounter(RC_DMA_Rx_Ch,SbusLength);
+			SbusDataRx[0]=0;
+			SbusDataRx[24]=0xff;
+			ErrorRX++;
+            DMA_Cmd(RC_DMA_Rx_Ch,ENABLE);
+		}
+		
+	}
+#else
     rx_buffer[rx_end] = USART_ReceiveData(USART1);
     // calculate timing since last rx
     unsigned long  maxticks = SysTick->LOAD;	
@@ -125,6 +210,7 @@ void USART1_IRQHandler(void)
     }        
     rx_end++;
     rx_end%=(RX_BUFF_SIZE);            //构建循环缓存
+#endif
 }
 
 void sbus_checkrx(void)
